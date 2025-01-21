@@ -1,0 +1,27 @@
+@NotificationService.API_HostAddress = https://localhost:7027
+
+###
+
+# Get a specific email notification by ID
+GET {{NotificationService.API_HostAddress}}/api/EmailNotification/1
+Accept: application/json
+
+###
+
+# Get all email notifications
+GET {{NotificationService.API_HostAddress}}/api/EmailNotification
+Accept: application/json
+
+###
+
+# Get paginated email notifications
+POST {{NotificationService.API_HostAddress}}/api/EmailNotification/paginated
+Content-Type: application/json
+Accept: application/json
+
+{
+  "PageNumber": 1,
+  "PageSize": 10
+}
+
+###

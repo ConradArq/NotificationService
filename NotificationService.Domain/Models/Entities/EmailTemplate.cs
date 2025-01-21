@@ -1,0 +1,16 @@
+﻿using NotificationService.Shared.Attributes;
+using System;
+using System.ComponentModel.DataAnnotations;
+using System.Reflection;
+
+namespace NotificationService.Domain.Models.Entities
+{
+    [Discoverable]
+    public class EmailTemplate : BaseDomainModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Subject { get; set; } = string.Empty;
+        public string Body { get; set; } = string.Empty;
+    }
+}
+

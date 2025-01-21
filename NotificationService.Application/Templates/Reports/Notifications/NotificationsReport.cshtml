@@ -1,0 +1,105 @@
+﻿@using NotificationService.Domain.Models
+@using NotificationService.Shared.Extensions;
+@using System.Collections.Generic;
+@using System;
+@using System.Linq;
+
+@model IEnumerable<Notification>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.6;
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+            font-weight: bold;
+        }
+        .summary {
+            margin-top: 20px;
+        }
+        .summary div {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Notifications Report</h1>
+
+    <p>Report Generated on: @DateTime.Now.InTimeZone().ToString("dd MMM yyyy, HH:mm")</p>
+
+    @if (Model != null && Model.Any())
+    {
+        DateTime startDate = Model.Min(n => n.CreatedDate);
+        DateTime endDate = Model.Max(n => n.CreatedDate);
+
+        <h2>Summary</h2>
+        <div class="summary">
+            <div><strong>Total Notifications:</strong> @Model.Count()</div>
+            <div><strong>Date Range:</strong> @startDate.ToString("dd MMM yyyy") - @endDate.ToString("dd MMM yyyy")</div>
+        </div>
+
+        <h2>Notifications by User</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>User ID</th>
+                    <th>Number of Notifications</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var userGroup in Model.GroupBy(n => n.UserId))
+                {
+                    <tr>
+                        <td>@(string.IsNullOrEmpty(userGroup.Key) ? "Unknown" : userGroup.Key)</td>
+                        <td>@userGroup.Count()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+
+        <h2>Notifications by Role</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Role ID</th>
+                    <th>Number of Notifications</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var roleGroup in Model.GroupBy(n => n.RoleId))
+                {
+                    <tr>
+                        <td>@(string.IsNullOrEmpty(roleGroup.Key) ? "Unknown" : roleGroup.Key)</td>
+                        <td>@roleGroup.Count()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No notifications data available.</p>
+    }
+</body>
+</html>
