@@ -1,7 +1,4 @@
-﻿using NotificationService.Domain.Enums;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NotificationService.Domain.Models
 {

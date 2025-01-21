@@ -1,7 +1,4 @@
 ﻿using NotificationService.Shared.Attributes;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Reflection.Metadata.Ecma335;
 
 namespace NotificationService.Domain.Models.Entities
 {

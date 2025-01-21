@@ -1,7 +1,4 @@
 ﻿using NotificationService.Shared.Attributes;
-using System;
-using System.ComponentModel.DataAnnotations;
-using System.Reflection;
 
 namespace NotificationService.Domain.Models.Entities
 {

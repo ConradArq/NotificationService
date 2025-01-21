@@ -1,7 +1,4 @@
-﻿using NotificationService.Domain.Enums;
-using NotificationService.Shared.Attributes;
-using System;
-using System.ComponentModel.DataAnnotations;
+﻿using NotificationService.Shared.Attributes;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace NotificationService.Domain.Models.Entities
