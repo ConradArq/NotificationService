@@ -79,7 +79,9 @@ namespace NotificationService.Application
             })
             .ConfigureApiBehaviorOptions(options =>
             {
-                // Uncomment to disable automatic 400 Bad Request responses for invalid models; Manual checking of ModelState.IsValid would be needed.
+                // Uncomment to disable automatic 400 Bad Request responses for invalid models. If SuppressModelStateInvalidFilter is
+                // set to true, InvalidModelStateResponseFactory will not handle the response, so manual checking of ModelState.IsValid 
+                // would be required if no other validation mechanism is in place.
                 // options.SuppressModelStateInvalidFilter = true;
 
                 options.InvalidModelStateResponseFactory = context =>
