@@ -1,6 +1,5 @@
 ﻿using NotificationService.Application.Attributes;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
 
 namespace NotificationService.Application.Dtos.EmailTemplate
 {

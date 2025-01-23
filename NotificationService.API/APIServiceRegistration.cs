@@ -79,6 +79,9 @@ namespace NotificationService.Application
             })
             .ConfigureApiBehaviorOptions(options =>
             {
+                // Uncomment to disable automatic 400 Bad Request responses for invalid models; Manual checking of ModelState.IsValid would be needed.
+                // options.SuppressModelStateInvalidFilter = true;
+
                 options.InvalidModelStateResponseFactory = context =>
                 {
                     // This runs when validation errors occur. Remove errors from ModelState with key "requestDto:". The System.Text.Json

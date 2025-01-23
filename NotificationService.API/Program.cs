@@ -218,6 +218,8 @@ await quartzScheduler.InitJobs();
 
 #endregion
 
+app.UseMiddleware<ExceptionMiddleware>();
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -257,8 +259,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseRouting();
-
-app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseMiddleware<AuthErrorMiddleware>();
 
