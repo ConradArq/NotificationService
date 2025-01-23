@@ -13,8 +13,10 @@ namespace NotificationService.API.Middlewares
         private readonly ILogger<ExceptionMiddleware> _logger;
 
         /// <summary>
-        /// Centralized exception middleware where all exceptions are propagated.
-        /// Instead of logging errors at their origin, exceptions are thrown and captured here for consistent error handling.
+        /// Centralized exception middleware that handles all exceptions propagated within the HTTP pipeline.
+        /// This middleware is responsible for creating appropriate HTTP responses by setting status codes, 
+        /// formatting exception messages into standardized responses (e.g., JSON), and ensuring consistent error handling.
+        /// Instead of logging errors at their origin, exceptions are thrown and captured here for centralized processing.
         /// </summary>
         public ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger)
         {
