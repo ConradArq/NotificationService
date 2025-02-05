@@ -1,10 +1,10 @@
 ﻿using NotificationService.Domain.Models.Entities;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Infrastructure.Persistence.Repositories
 {

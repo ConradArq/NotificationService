@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
+using NotificationService.Domain.Interfaces.Repositories;
 using NotificationService.Infrastructure.Configuration;
 using NotificationService.Infrastructure.Services.BackgroundServices;
 using NotificationService.Shared.Extensions;

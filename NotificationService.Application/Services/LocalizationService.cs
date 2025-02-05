@@ -1,5 +1,5 @@
 ﻿using NotificationService.Application.Interfaces.Services;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
+using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Application.Services
 {

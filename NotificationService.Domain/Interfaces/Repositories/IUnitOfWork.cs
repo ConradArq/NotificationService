@@ -1,6 +1,6 @@
 ﻿using NotificationService.Domain.Models;
 
-namespace NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories
+namespace NotificationService.Domain.Interfaces.Repositories
 {
     public interface IUnitOfWork
     {

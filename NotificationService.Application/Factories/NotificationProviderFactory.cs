@@ -1,9 +1,10 @@
 ﻿using NotificationService.Application.Interfaces.Factories;
-using NotificationService.Domain.Interfaces.Infrastructure.Providers;
+using NotificationService.Domain.Enums;
+using NotificationService.Domain.Interfaces.Providers;
 
 namespace NotificationService.Application.Factories
 {
-    internal class NotificationProviderFactory : INotificationProviderFactory
+    public class NotificationProviderFactory : INotificationProviderFactory
     {
         private readonly IEnumerable<INotificationProvider> _providers;
 
@@ -12,13 +13,13 @@ namespace NotificationService.Application.Factories
             _providers = providers;
         }
 
-        public INotificationProvider Create(Type notificationType)
+        public INotificationProvider Create(NotificationType notificationType, string? roleId = null)
         {
-            var provider = _providers.FirstOrDefault(p => p.GetType().Name.Contains(notificationType.Name.ToString()));
+            var provider = _providers.FirstOrDefault(p => p.NotificationType == notificationType && p.CanHandle(roleId));
 
             if (provider == null)
             {
-                throw new ArgumentException("Tipo de notificación no válida.");
+                throw new InvalidOperationException("No suitable provider found.");
             }
 
             return provider;

@@ -1,10 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NotificationService.Domain.Interfaces.Infrastructure.Providers;
-using NotificationService.Domain.Interfaces.Infrastructure.Services;
+using NotificationService.Domain.Interfaces.Providers;
+using NotificationService.Infrastructure.Interfaces.Services;
 using NotificationService.Infrastructure.Configuration;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
 using NotificationService.Infrastructure.Interfaces.Services;
 using NotificationService.Infrastructure.Persistence;
 using NotificationService.Infrastructure.Persistence.Repositories;
@@ -14,11 +13,12 @@ using NotificationService.Infrastructure.Services.Queues;
 using NotificationService.Infrastructure.Services.BackgroundServices;
 using Quartz;
 using Quartz.Impl;
-using NotificationService.Infrastructure.Quartz;
 using Quartz.Spi;
+using NotificationService.Infrastructure.Quartz;
 using NotificationService.Infrastructure.Quartz.Jobs;
 using NotificationService.Infrastructure.Providers;
-using Microsoft.Extensions.Hosting;
+using NotificationService.Infrastructure.Interfaces.Providers;
+using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Infrastructure
 {

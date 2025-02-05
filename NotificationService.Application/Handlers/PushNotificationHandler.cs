@@ -1,10 +1,11 @@
 ﻿using NotificationService.Application.Dtos.Notification.Push;
-using NotificationService.Domain.Interfaces.Infrastructure.Providers;
+using NotificationService.Domain.Interfaces.Providers;
 using NotificationService.Domain.Models.Entities;
 using NotificationService.Domain.Models;
 using AutoMapper;
 using NotificationService.Application.Interfaces.Handlers;
 using NotificationService.Application.Interfaces.Factories;
+using NotificationService.Domain.Enums;
 
 namespace NotificationService.Application.Handlers
 {
@@ -14,9 +15,9 @@ namespace NotificationService.Application.Handlers
         private readonly IMapper _mapper;
 
 
-        public PushNotificationHandler(INotificationProviderFactory providerFactory, IMapper mapper)
+        public PushNotificationHandler(INotificationProviderFactory notificationProviderFactory, IMapper mapper)
         {
-            _pushProvider = providerFactory.Create(typeof(PushNotification));
+            _pushProvider = notificationProviderFactory.Create(NotificationType.Push);
             _mapper = mapper;
         }
 

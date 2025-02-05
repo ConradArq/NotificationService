@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
-using NotificationService.Domain.Interfaces.Infrastructure.Providers;
 using NotificationService.Infrastructure.Configuration;
+using NotificationService.Infrastructure.Interfaces.Providers;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;

@@ -6,7 +6,7 @@ using NotificationService.Application.Dtos.Notification;
 using NotificationService.Domain.Models;
 using NotificationService.Application.Interfaces.Services;
 using NotificationService.Application.Interfaces.Factories;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
+using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Application.Services
 {

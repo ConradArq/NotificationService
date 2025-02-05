@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories
+namespace NotificationService.Domain.Interfaces.Repositories
 {
     public interface IGenericRepository<T> where T : class
     {

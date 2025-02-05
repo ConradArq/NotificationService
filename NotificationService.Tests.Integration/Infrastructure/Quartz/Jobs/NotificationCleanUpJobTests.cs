@@ -4,7 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
+using NotificationService.Domain.Interfaces.Repositories;
 using NotificationService.Domain.Models.Entities;
 using NotificationService.Infrastructure.Configuration;
 using NotificationService.Infrastructure.Interfaces.Logging;

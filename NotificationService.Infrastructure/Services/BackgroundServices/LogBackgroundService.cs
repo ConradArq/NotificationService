@@ -3,8 +3,8 @@ using NotificationService.Infrastructure.Services.Queues;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using NotificationService.Infrastructure.Logging.Models;
-using NotificationService.Domain.Interfaces.Infrastructure.Providers;
-using NotificationService.Domain.Interfaces.Infrastructure.Services;
+using NotificationService.Infrastructure.Interfaces.Services;
+using NotificationService.Infrastructure.Interfaces.Providers;
 
 namespace NotificationService.Infrastructure.Services.BackgroundServices
 {

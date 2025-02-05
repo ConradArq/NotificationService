@@ -8,11 +8,11 @@ using NotificationService.Infrastructure.Interfaces.Logging;
 using NotificationService.Infrastructure.SignalR.Hubs;
 using Microsoft.OpenApi.Models;
 using NotificationService.Infrastructure.Quartz;
-using NotificationService.Domain.Interfaces.Infrastructure.Providers;
 using System.Security.Claims;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
 using System.Globalization;
 using Microsoft.Extensions.Options;
+using NotificationService.Infrastructure.Interfaces.Providers;
+using NotificationService.Domain.Interfaces.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 

@@ -3,7 +3,7 @@ using NotificationService.Application.Dtos;
 using NotificationService.Application.Dtos.SmtpConfig;
 using NotificationService.Application.Exceptions;
 using NotificationService.Application.Interfaces.Services;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
+using NotificationService.Domain.Interfaces.Repositories;
 using NotificationService.Domain.Models.Entities;
 using NotificationService.Shared.Helpers;
 

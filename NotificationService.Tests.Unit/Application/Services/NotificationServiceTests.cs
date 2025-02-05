@@ -5,8 +5,8 @@ using NotificationService.Application.Dtos;
 using NotificationService.Application.Interfaces.Factories;
 using NotificationService.Application.Interfaces.Handlers;
 using NotificationService.Application.Services;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
 using NotificationService.Domain.Models.Entities;
+using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Tests.Unit.Application.Services
 {

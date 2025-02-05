@@ -1,19 +1,22 @@
-﻿using NotificationService.Domain.Interfaces.Infrastructure.Services;
+﻿using NotificationService.Infrastructure.Interfaces.Services;
 using Microsoft.Extensions.Logging;
 using NotificationService.Domain.Models.Entities;
 using NotificationService.Domain.Models;
 using Microsoft.Extensions.Configuration;
-using NotificationService.Domain.Interfaces.Infrastructure.Providers;
+using NotificationService.Domain.Interfaces.Providers;
 using Microsoft.AspNetCore.SignalR;
 using NotificationService.Infrastructure.SignalR.Hubs;
 using NotificationService.Infrastructure.SignalR.Models;
-using System.Resources;
 using NotificationService.Shared.Resources;
+using NotificationService.Infrastructure.Interfaces.Providers;
+using NotificationService.Domain.Enums;
 
 namespace NotificationService.Infrastructure.Providers.Notifications
 {
     public class PushNotificationProvider : INotificationProvider
     {
+        public NotificationType NotificationType => NotificationType.Push;
+
         private readonly IHttpService _httpService;
         private readonly ILogger<PushNotificationProvider> _logger;
         private readonly IConfiguration _configuration;

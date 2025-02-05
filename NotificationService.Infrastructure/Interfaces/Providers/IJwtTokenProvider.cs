@@ -1,6 +1,6 @@
 ﻿using System.Security.Claims;
 
-namespace NotificationService.Domain.Interfaces.Infrastructure.Providers
+namespace NotificationService.Infrastructure.Interfaces.Providers
 {
     public interface IJwtTokenProvider
     {

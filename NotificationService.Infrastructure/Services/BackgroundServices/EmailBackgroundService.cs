@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
 using NotificationService.Infrastructure.Services.Queues;
 using NotificationService.Domain.Enums;
 using NotificationService.Infrastructure.Interfaces.Services;
@@ -10,6 +9,7 @@ using NotificationService.Infrastructure.SignalR.Hubs;
 using NotificationService.Infrastructure.SignalR.Models;
 using Microsoft.Extensions.Configuration;
 using NotificationService.Shared.Resources;
+using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Infrastructure.Services.BackgroundServices
 {

@@ -1,4 +1,4 @@
-﻿using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
+﻿using NotificationService.Domain.Interfaces.Repositories;
 using NotificationService.Domain.Models;
 
 namespace NotificationService.Infrastructure.Persistence.Repositories

@@ -1,4 +1,4 @@
-﻿using NotificationService.Domain.Interfaces.Infrastructure.Services;
+﻿using NotificationService.Infrastructure.Interfaces.Services;
 using System.Text;
 using System.Text.Json;
 

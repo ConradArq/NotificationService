@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
 using NotificationService.Application.Interfaces.Handlers;
 using NotificationService.Application.Services;
+using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Application.Handlers
 {

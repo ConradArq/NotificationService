@@ -1,5 +1,5 @@
 ﻿using NotificationService.Application.Interfaces.Handlers;
-using NotificationService.Domain.Interfaces.Infrastructure.Providers;
+using NotificationService.Domain.Interfaces.Providers;
 
 namespace NotificationService.Application.Interfaces.Factories
 {

@@ -1,32 +1,32 @@
 ﻿using NotificationService.Application.Dtos.Notification.Email;
-using NotificationService.Application.Exceptions;
 using NotificationService.Domain.Enums;
-using NotificationService.Domain.Interfaces.Infrastructure.Providers;
 using NotificationService.Domain.Models.Entities.External;
 using NotificationService.Domain.Models.Entities;
 using NotificationService.Domain.Models;
 using AutoMapper;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
 using NotificationService.Application.Interfaces.Handlers;
 using NotificationService.Application.Interfaces.Factories;
+using NotificationService.Domain.Interfaces.Repositories;
 
 namespace NotificationService.Application.Handlers
 {
     public class EmailNotificationHandler : INotificationHandler<CreateEmailNotificationDto>
     {
-        private readonly INotificationProvider _emailProvider;
+        private readonly INotificationProviderFactory _notificationProviderFactory;
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
 
-        public EmailNotificationHandler(INotificationProviderFactory providerFactory, IUnitOfWork unitOfWork, IMapper mapper)
+        public EmailNotificationHandler(INotificationProviderFactory notificationProviderFactory, IUnitOfWork unitOfWork, IMapper mapper)
         {
-            _emailProvider = providerFactory.Create(typeof(EmailNotification));
+            _notificationProviderFactory = notificationProviderFactory;
             _unitOfWork = unitOfWork;
             _mapper = mapper;
         }
 
         public async Task<Notification> HandleAsync(CreateEmailNotificationDto createEmailNotificationDto)
         {
+            var _emailProvider = _notificationProviderFactory.Create(NotificationType.Email, createEmailNotificationDto.RoleId);
+
             var users = await FetchUsersAsync(createEmailNotificationDto);
 
             if(users.Count == 0)
@@ -36,7 +36,7 @@ namespace NotificationService.Application.Handlers
 
             var emailNotification = _mapper.Map<EmailNotification>(createEmailNotificationDto);
 
-            //If subject or body is not provided we get it from email template.
+            // If subject or body is not provided we get it from email template.
             if (string.IsNullOrEmpty(createEmailNotificationDto.Subject) || string.IsNullOrEmpty(createEmailNotificationDto.Body))
             {
                 var emailTemplate = await _unitOfWork.EmailTemplateRepository.GetSingleAsync(createEmailNotificationDto.EmailTemplateId!.Value);
@@ -94,8 +94,8 @@ namespace NotificationService.Application.Handlers
             return emailNotification;
         }
 
-        //If emails are provided, that takes precedence over RoleId and UserId, and email is sent to corresponding email addresses.
-        //If email addresses are found in the system we retrieve user's first and last names and add it to the object.
+        // If emails are provided, that takes precedence over RoleId and UserId, and email is sent to corresponding email addresses.
+        // If email addresses are found in the system we retrieve user's first and last names and add it to the object.
         private async Task<List<AspNetUser>> FetchUsersAsync(CreateEmailNotificationDto createEmailNotificationDto)
         {
             List<AspNetUser> users = new List<AspNetUser>();

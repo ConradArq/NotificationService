@@ -2,7 +2,7 @@
 using NotificationService.Application.Handlers;
 using NotificationService.Application.Interfaces.Factories;
 using NotificationService.Application.Interfaces.Handlers;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
+using NotificationService.Domain.Interfaces.Repositories;
 using NotificationService.Domain.Models.Entities;
 
 namespace NotificationService.Application.Factories

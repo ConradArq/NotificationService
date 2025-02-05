@@ -1,4 +1,4 @@
-﻿namespace NotificationService.Domain.Interfaces.Infrastructure.Services
+﻿namespace NotificationService.Infrastructure.Interfaces.Services
 {
     public interface IHttpService
     {

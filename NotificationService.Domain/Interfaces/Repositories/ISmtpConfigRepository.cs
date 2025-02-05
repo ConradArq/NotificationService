@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories
+namespace NotificationService.Domain.Interfaces.Repositories
 {
     public interface ISmtpConfigRepository : IGenericRepository<SmtpConfig>
     {

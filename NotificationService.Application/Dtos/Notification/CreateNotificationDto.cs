@@ -13,12 +13,14 @@ namespace NotificationService.Application.Dtos.Notification
     public class CreateNotificationDto
     {
         /// <summary>
-        /// The ID of the user who receives the notification. Optional, notifications can also be sent by RoleId.
+        /// The ID of the user who receives the notification. Optional, notifications can also be sent by RoleId 
+        /// or email list if extended to support that.
         /// </summary>
         public string? UserId { get; set; }
 
         /// <summary>
-        /// The ID of the user who receives the notification. Optional, notifications can also be sent by UserId.
+        /// The ID of the role who receives the notification. Optional, notifications can also be sent by UserId
+        /// or email list if extended to support that.
         /// </summary>
         public string? RoleId { get; set; }
     }

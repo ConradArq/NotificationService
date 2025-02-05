@@ -1,6 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc.Controllers;
-using NotificationService.Domain.Interfaces.Infrastructure.Persistence.Repositories;
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Mvc.Controllers;
+using NotificationService.Domain.Interfaces.Repositories;
+using NotificationService.Domain.Models;
 using NotificationService.Shared.Helpers;
+using System.Reflection;
 using System.Text.Json;
 
 /// <summary>
@@ -27,7 +30,7 @@ public static class FilterHelper
         IHttpContextAccessor httpContextAccessor,
         IServiceProvider serviceProvider,
         Type? entityType = null,
-        int? entityIdValue = null,
+        object? entityIdValue = null,
         string entityIdKey = "id")
     {
         var httpContext = httpContextAccessor.HttpContext;
@@ -41,8 +44,8 @@ public static class FilterHelper
         if (resolvedEntityType == null) throw new InvalidOperationException($"Could not resolve entity type for '{controllerActionDescriptor.ControllerName}'.");
 
         // Extract the entity ID
-        int? entityId = entityIdValue ?? await GetIdFromRequestAsync(httpContext, entityIdKey);
-        if (entityId == null) return null;
+        object? searchEntityId = entityIdValue ?? await GetIdFromRequestAsync(httpContext, entityIdKey);
+        if (searchEntityId == null) return null;
 
         using var scope = serviceProvider.CreateScope();
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
@@ -50,11 +53,31 @@ public static class FilterHelper
         // Alternative way to retrieve the repository dynamically
         //var repository = GetGenericRepository(unitOfWork, resolvedEntityType, null);
 
+        // Get GetSingleAsync method from the resolved repository for the resolved entity type
         var getSingleAsyncMethod = repository.GetType().GetMethod("GetSingleAsync");
         if (getSingleAsyncMethod == null) throw new InvalidOperationException($"GetSingleAsync method not found in repository for type '{resolvedEntityType.Name}'.");
 
+        // Get the ID property from the resolved entity type
+        PropertyInfo? resolvedEntityIdProperty = resolvedEntityType.GetProperty("Id");
+        if (resolvedEntityIdProperty == null)
+            throw new InvalidOperationException($"Entity {resolvedEntityType.Name} does not have an 'Id' property.");
+
+        // Compare the ID from the request or method parameters with the entity's ID type, returning null if they are incompatible
+        if (searchEntityId != null && !resolvedEntityIdProperty.PropertyType.IsInstanceOfType(searchEntityId))
+        {
+            // Parse searchEntityId to int if necessary, as it may come from an HTTP request or another source as a string
+            if (int.TryParse(searchEntityId.ToString(), out int parsedId) && resolvedEntityIdProperty.PropertyType == typeof(int))
+            {
+                searchEntityId = parsedId;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         // Invoke the GetSingleAsync method dynamically
-        var task = (Task?)getSingleAsyncMethod.Invoke(repository, new object?[] { entityId, null, false });
+        var task = (Task?)getSingleAsyncMethod.Invoke(repository, new object?[] { searchEntityId, null, false });
         var taskType = typeof(Task<>).MakeGenericType(resolvedEntityType);
 
         if (task == null || !taskType.IsInstanceOfType(task))
@@ -76,7 +99,7 @@ public static class FilterHelper
     /// or the JSON request body. The source of the ID depends on the request context:
     /// - For route values or query parameters, the ID is extracted directly from the URL or query string.
     /// - For form data, the ID is extracted from the request body (e.g., form submissions).
-    /// - For JSON request bodies, the ID is parsed from the body content.
+    /// - For JSON request bodies, the ID is extracted from the body content.
     /// </summary>
     /// <param name="httpContext">
     /// The HTTP context containing the current request, which provides access to route values, 
@@ -87,40 +110,33 @@ public static class FilterHelper
     /// route values, query parameters, form data, or the JSON request body. Defaults to "id".
     /// </param>
     /// <returns>
-    /// The retrieved ID value as an integer if found, or <c>null</c> if no matching value is present in the request.
+    /// The retrieved ID value if found, or <c>null</c> if no matching value is present in the request.
     /// </returns>
-    public static async Task<int?> GetIdFromRequestAsync(HttpContext httpContext, string entityIdKey = "id")
+    public static async Task<object?> GetIdFromRequestAsync(HttpContext httpContext, string entityIdKey = "id")
     {
         // Try to retrieve the entity ID from RouteValues
-        if (httpContext.Request.RouteValues.TryGetValue(entityIdKey, out var routeValue) &&
-            int.TryParse(routeValue?.ToString(), out var routeEntityId))
+        if (httpContext.Request.RouteValues.TryGetValue(entityIdKey, out var routeValue))
         {
-            return routeEntityId;
+            return routeValue;
         }
 
         // Try to retrieve the entity ID from Query parameters
-        if (httpContext.Request.Query.TryGetValue(entityIdKey, out var queryValue) &&
-            int.TryParse(queryValue.FirstOrDefault(), out var queryEntityId))
+        if (httpContext.Request.Query.TryGetValue(entityIdKey, out var queryValue))
         {
-            return queryEntityId;
+            return queryValue;
         }
 
         // Try to retrieve the entity ID from form data (e.g., application/x-www-form-urlencoded or multipart/form-data)
-        if (httpContext.Request.HasFormContentType &&
-            httpContext.Request.Form.TryGetValue(entityIdKey, out var formValue) &&
-            int.TryParse(formValue.FirstOrDefault(), out var formEntityId))
+        if (httpContext.Request.HasFormContentType && httpContext.Request.Form.TryGetValue(entityIdKey, out var formValue))
         {
-            return formEntityId;
+            return formValue;
         }
 
         // Try to retrieve the entity ID from the JSON Request Body for certain HTTP methods (POST, PUT, DELETE)
         if (httpContext.Request.Method == HttpMethods.Post || httpContext.Request.Method == HttpMethods.Put || httpContext.Request.Method == HttpMethods.Delete)
         {
             var bodyEntityId = await ExtractIdFromBodyAsync(httpContext.Request, entityIdKey);
-            if (int.TryParse(bodyEntityId, out var parsedBodyEntityId))
-            {
-                return parsedBodyEntityId;
-            }
+            return bodyEntityId;
         }
 
         return null;
@@ -186,7 +202,7 @@ public static class FilterHelper
                 throw new ArgumentNullException(nameof(entityName), "Entity name must be provided if entity type is null.");
 
             // Resolve the entity type from the assembly using the entity name
-            var entityTypeAssembly = typeof(NotificationService.Domain.Models.BaseDomainModel).Assembly;
+            var entityTypeAssembly = typeof(BaseDomainModel).Assembly;
             entityType = entityTypeAssembly.GetTypes()
                 .FirstOrDefault(t => t.Name.Equals(entityName, StringComparison.OrdinalIgnoreCase));
 

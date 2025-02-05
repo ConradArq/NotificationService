@@ -32,14 +32,14 @@ namespace NotificationService.API.Filters
         // a corresponding entity must exist; otherwise, the validation passes since the entity ID is not part of the request.
         private async Task VerifyEntityExistenceAsync(ActionExecutingContext context)
         {
-            int? entityId = await FilterHelper.GetIdFromRequestAsync(context.HttpContext);
+            var httpContext = context.HttpContext;
+            if (httpContext == null)
+                throw new InvalidOperationException("HttpContext is not available.");
+
+            object? entityId = await FilterHelper.GetIdFromRequestAsync(httpContext);
 
             if (entityId != null)
             {
-                var httpContext = context.HttpContext;
-                if (httpContext == null)
-                    throw new InvalidOperationException("HttpContext is not available.");
-
                 var httpContextAccessor = httpContext.RequestServices.GetService<IHttpContextAccessor>();
                 if (httpContextAccessor == null)
                     throw new InvalidOperationException("IHttpContextAccessor is not registered in the service provider.");
