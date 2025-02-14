@@ -13,6 +13,7 @@ using System.Globalization;
 using Microsoft.Extensions.Options;
 using NotificationService.Infrastructure.Interfaces.Providers;
 using NotificationService.Domain.Interfaces.Repositories;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,10 @@ builder.Services.AddSwaggerGen(c =>
             new string[] {}
         }
     });
+
+    // Uncomment to include XML documentation comments from the project's generated .xml file in Swagger.
+    //var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    //c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
 // Configure HostOptions to handle unhandled exceptions in BackgroundService
@@ -247,8 +252,8 @@ if (app.Environment.IsDevelopment())
             new Claim("Permission", "CanSendNotification"),
             new Claim("Permission", "CanGenerateReports"),
             new Claim("Department", "IT"),
-            new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub, testAdmin?.Id ?? defaultUserId),
-            new Claim(System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Email, testAdmin?.Email ?? defaultEmail)
+            new Claim(ClaimTypes.NameIdentifier, testAdmin?.Id ?? defaultUserId),
+            new Claim(ClaimTypes.Email, testAdmin?.Email ?? defaultEmail)
         };
 
         var token = jwtTokenProvider.GenerateAuthenticationToken(TimeSpan.FromMinutes(1), claims.ToArray());

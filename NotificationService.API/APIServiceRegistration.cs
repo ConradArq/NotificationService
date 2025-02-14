@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using NotificationService.API.Filters;
 using NotificationService.API.ModelBinders.Providers;
 using NotificationService.Application.Exceptions;
+using NotificationService.Infrastructure.Configuration;
 using System.Globalization;
 using System.Text;
 
@@ -103,23 +104,39 @@ namespace NotificationService.Application
 
             services.AddSwaggerGen();
 
+            var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()
+                   ?? throw new InvalidOperationException("JwtSettings section is missing from configuration.");
+
             services.AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            // ASP.NET Core's authentication system automatically maps all claims from IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames
+            // to Security.Claims.ClaimTypes (e.g. JwtRegisteredClaimNames.Sub to ClaimTypes.NameIdentifier).
+            // When retrieving claims from HttpContext.User, use ClaimTypes instead of JwtRegisteredClaimNames to ensure compatibility.
             }).AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = new TokenValidationParameters
                 {
+                    // Explicitly setting NameClaimType to JwtRegisteredClaimNames.Sub to support OAuth providers
+                    // (Google, Azure AD, etc.), as many external providers use "sub" as the unique user identifier.        
                     NameClaimType = System.IdentityModel.Tokens.Jwt.JwtRegisteredClaimNames.Sub,
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = true,
+
+                    // Audience and issuer validation
                     ValidateAudience = true,
+                    ValidateIssuer = true,
+                    ValidAudience = jwtSettings.Audience,
+                    ValidIssuer = jwtSettings.Issuer,
+
+                    // Ensure tokens are signed correctly
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings.Key)),
+
+                    // Token expiration validation
                     ValidateLifetime = true,
-                    ClockSkew = TimeSpan.Zero,
-                    ValidIssuer = configuration["JwtSettings:Issuer"],
-                    ValidAudience = configuration["JwtSettings:Audience"],
-                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["JwtSettings:Key"]!)),
+                    ClockSkew = TimeSpan.Zero // Ensure immediate expiration validation
+
+
                     // Uncomment to allow tokens without an exp claim while validating those with exp claim (for testing purposes, not production)
                     //LifetimeValidator = (notBefore, expires, token, parameters) =>
                     //{
