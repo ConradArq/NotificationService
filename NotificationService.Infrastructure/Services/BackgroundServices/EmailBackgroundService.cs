@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using NotificationService.Infrastructure.Services.Queues;
 using NotificationService.Domain.Enums;
 using NotificationService.Infrastructure.Interfaces.Services;
 using Microsoft.Extensions.Logging;

@@ -13,7 +13,7 @@ namespace NotificationService.Application.Dtos.Notification.Email
     public class SearchPaginatedEmailNotificationDto : SearchPaginatedNotificationDto
     {
         [DefaultValue(1)]
-        public int? EmailTemplateId { get; set; }
+        public int? TemplateId { get; set; }
         public string? Subject { get; set; }
         public string? Body { get; set; }
 

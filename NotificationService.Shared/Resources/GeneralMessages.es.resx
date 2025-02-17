@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ConflictExceptionMessage" xml:space="preserve">
-    <value>La entidad no está en un estado válido para ser modificada. Por favor, revise su estado.</value>
+    <value>Se produjo un conflicto al procesar la solicitud.</value>
   </data>
   <data name="DbUpdateExceptionMessage" xml:space="preserve">
     <value>Error al guardar en la base de datos. Por favor, verifique que los datos sean correctos y, si es así, intente nuevamente más tarde.</value>
@@ -132,11 +132,17 @@
   <data name="ErrorWhileSendingEmailMessage" xml:space="preserve">
     <value>Error al enviar el correo electrónico con el asunto '{0}' a los destinatarios: {1}, CC: {2}, BCC: {3}.</value>
   </data>
+  <data name="InvalidEntityStatusMessage" xml:space="preserve">
+    <value>La entidad no está en un estado válido para ser modificada. Por favor, revise su estado.</value>
+  </data>
   <data name="NoneAvailableMessage" xml:space="preserve">
     <value>Ninguno disponible.</value>
   </data>
   <data name="NotFoundExceptionEntityMessage" xml:space="preserve">
     <value>La entidad con Id ({0}) no existe.</value>
+  </data>
+  <data name="NotFoundExceptionMessage" xml:space="preserve">
+    <value>El recurso solicitado no fue encontrado.</value>
   </data>
   <data name="PushNotificationSentMessage" xml:space="preserve">
     <value>Notificación push con el mensaje '{0}' enviada al usuario '{1}' y rol '{2}'.</value>

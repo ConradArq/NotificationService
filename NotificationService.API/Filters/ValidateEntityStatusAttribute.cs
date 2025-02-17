@@ -56,7 +56,7 @@ namespace NotificationService.API.Filters
 
             if (!Statuses.Contains((Status)statusId))
             {
-                throw new ConflictException(GeneralMessages.ConflictExceptionMessage);
+                throw new ConflictException(GeneralMessages.InvalidEntityStatusMessage);
             }
 
             var result = await next();

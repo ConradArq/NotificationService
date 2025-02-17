@@ -1,4 +1,6 @@
 
+using NotificationService.Shared.Resources;
+
 namespace NotificationService.Application.Exceptions
 {
     /// <summary>
@@ -7,6 +9,10 @@ namespace NotificationService.Application.Exceptions
     /// </summary>
     public class ConflictException : ApplicationException
     {
+        public ConflictException() : base(GeneralMessages.ConflictExceptionMessage)
+        {
+        }
+
         public ConflictException(string message) : base(message)
         {
         }

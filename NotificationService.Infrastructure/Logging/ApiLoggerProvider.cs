@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
-using NotificationService.Infrastructure.Services.Queues;
+using NotificationService.Infrastructure.Interfaces.Services;
 
 namespace NotificationService.Infrastructure.Logging
 {

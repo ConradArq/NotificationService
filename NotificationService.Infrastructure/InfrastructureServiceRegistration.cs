@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NotificationService.Domain.Interfaces.Providers;
 using NotificationService.Infrastructure.Interfaces.Services;
 using NotificationService.Infrastructure.Configuration;
-using NotificationService.Infrastructure.Interfaces.Services;
 using NotificationService.Infrastructure.Persistence;
 using NotificationService.Infrastructure.Persistence.Repositories;
 using NotificationService.Infrastructure.Providers.Notifications;

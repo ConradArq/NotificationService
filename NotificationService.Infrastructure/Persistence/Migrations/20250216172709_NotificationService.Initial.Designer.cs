@@ -12,8 +12,8 @@ using NotificationService.Infrastructure.Persistence;
 namespace NotificationService.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(NotificationServiceDbContext))]
-    [Migration("20241210180702_NotificationService.AddPushNotification")]
-    partial class NotificationServiceAddPushNotification
+    [Migration("20250216172709_NotificationService.Initial")]
+    partial class NotificationServiceInitial
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,22 +50,13 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EmailTemplateId")
-                        .HasColumnType("int");
-
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ProcessId")
-                        .HasColumnType("int");
-
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Rue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StatusId")
@@ -74,6 +65,9 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TemplateId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ToRecipients")
                         .HasColumnType("nvarchar(max)");
@@ -114,9 +108,6 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProcessId")
-                        .HasColumnType("int");
-
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
@@ -156,13 +147,7 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProcessId")
-                        .HasColumnType("int");
-
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Rue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StatusId")

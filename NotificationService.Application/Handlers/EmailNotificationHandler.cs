@@ -7,6 +7,7 @@ using AutoMapper;
 using NotificationService.Application.Interfaces.Handlers;
 using NotificationService.Application.Interfaces.Factories;
 using NotificationService.Domain.Interfaces.Repositories;
+using System.Text.Json;
 
 namespace NotificationService.Application.Handlers
 {
@@ -29,7 +30,7 @@ namespace NotificationService.Application.Handlers
 
             var users = await FetchUsersAsync(createEmailNotificationDto);
 
-            if(users.Count == 0)
+            if (users.Count == 0)
             {
                 throw new InvalidOperationException("The specified users could not be found to complete this operation.");
             }
@@ -39,7 +40,7 @@ namespace NotificationService.Application.Handlers
             // If subject or body is not provided we get it from email template.
             if (string.IsNullOrEmpty(createEmailNotificationDto.Subject) || string.IsNullOrEmpty(createEmailNotificationDto.Body))
             {
-                var emailTemplate = await _unitOfWork.EmailTemplateRepository.GetSingleAsync(createEmailNotificationDto.EmailTemplateId!.Value);
+                var emailTemplate = await _unitOfWork.EmailTemplateRepository.GetSingleAsync(createEmailNotificationDto.TemplateId!.Value);
 
                 if (emailTemplate == null)
                 {
@@ -48,11 +49,7 @@ namespace NotificationService.Application.Handlers
 
                 foreach (var user in users)
                 {
-                    var placeholderReplacements = new Dictionary<EmailTemplatePlaceholders, string>
-                        {
-                            { EmailTemplatePlaceholders.Date, DateTime.Now.ToString("dd/MM/yyyy") },
-                            { EmailTemplatePlaceholders.User, $"{user.FirstName} {user.LastName}" },
-                        };
+                    var placeholderReplacements = GetPlaceholderReplacements(createEmailNotificationDto.TemplatePlaceholderMappings, user);
 
                     var userEmailNotification = new EmailNotification()
                     {
@@ -63,8 +60,8 @@ namespace NotificationService.Application.Handlers
                         FileAttachments = emailNotification.FileAttachments
                     };
 
-                    userEmailNotification.Subject ??= ReplaceEmailTemplatePlaceholders(emailTemplate.Subject, placeholderReplacements);
-                    userEmailNotification.Body ??= ReplaceEmailTemplatePlaceholders(emailTemplate.Body, placeholderReplacements);
+                    userEmailNotification.Subject ??= ReplaceTemplatePlaceholders(emailTemplate.Subject, placeholderReplacements);
+                    userEmailNotification.Body ??= ReplaceTemplatePlaceholders(emailTemplate.Body, placeholderReplacements);
                     userEmailNotification.To.Add(user.Email);
 
                     await _emailProvider.SendNotificationAsync(userEmailNotification);
@@ -129,16 +126,43 @@ namespace NotificationService.Application.Handlers
             return users;
         }
 
-        private string ReplaceEmailTemplatePlaceholders(string textHtml, Dictionary<EmailTemplatePlaceholders, string> replacements)
+        private Dictionary<string, string> GetPlaceholderReplacements(string? templatePlaceholderMappings, AspNetUser user)
         {
-            foreach (var placeholder in Enum.GetValues<EmailTemplatePlaceholders>())
-            {
-                var placeholderText = $"{{{placeholder}}}";
+            var placeholderReplacements = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
-                if (replacements.TryGetValue(placeholder, out string? replacementValue))
+            if (!string.IsNullOrEmpty(templatePlaceholderMappings))
+            {
+                var mappings = JsonSerializer.Deserialize<Dictionary<string, string>>(templatePlaceholderMappings,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+
+                if (mappings is not null)
                 {
-                    textHtml = textHtml.Replace(placeholderText, replacementValue);
+                    foreach (var kvp in mappings)
+                    {
+                        placeholderReplacements[kvp.Key] = kvp.Value;
+                    }
                 }
+            }
+
+            // Add default placeholders **only if they are not already present**
+            if (!placeholderReplacements.ContainsKey(nameof(EmailTemplatePlaceholders.Date)))
+            {
+                placeholderReplacements[nameof(EmailTemplatePlaceholders.Date)] = DateTime.Now.ToString("dd/MM/yyyy");
+            }
+
+            if (!placeholderReplacements.ContainsKey(nameof(EmailTemplatePlaceholders.User)))
+            {
+                placeholderReplacements[nameof(EmailTemplatePlaceholders.User)] = $"{user.FirstName} {user.LastName}";
+            }
+
+            return placeholderReplacements;
+        }
+
+        private string ReplaceTemplatePlaceholders(string textHtml, Dictionary<string, string> replacements)
+        {
+            foreach (var replacement in replacements)
+            {
+                textHtml = textHtml.Replace($"{{{replacement.Key}}}", replacement.Value);
             }
 
             return textHtml;

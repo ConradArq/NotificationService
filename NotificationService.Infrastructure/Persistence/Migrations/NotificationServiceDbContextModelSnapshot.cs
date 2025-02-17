@@ -47,22 +47,13 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("EmailTemplateId")
-                        .HasColumnType("int");
-
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("LastModifiedDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<int?>("ProcessId")
-                        .HasColumnType("int");
-
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Rue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StatusId")
@@ -71,6 +62,9 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                     b.Property<string>("Subject")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("TemplateId")
+                        .HasColumnType("int");
 
                     b.Property<string>("ToRecipients")
                         .HasColumnType("nvarchar(max)");
@@ -111,9 +105,6 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProcessId")
-                        .HasColumnType("int");
-
                     b.Property<int>("StatusId")
                         .HasColumnType("int");
 
@@ -153,13 +144,7 @@ namespace NotificationService.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProcessId")
-                        .HasColumnType("int");
-
                     b.Property<string>("RoleId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Rue")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("StatusId")

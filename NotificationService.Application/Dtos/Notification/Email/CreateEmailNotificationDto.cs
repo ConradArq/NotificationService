@@ -17,7 +17,8 @@ namespace NotificationService.Application.Dtos.Notification.Email
     {
         [GreaterThanZero]
         [DefaultValue(1)]
-        public int? EmailTemplateId { get; set; }
+        public int? TemplateId { get; set; }
+        public string? TemplatePlaceholderMappings { get; set; }
 
         public string? Subject { get; set; }
 

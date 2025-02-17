@@ -1,8 +1,8 @@
-﻿using NotificationService.Infrastructure.Services.Queues;
-using NotificationService.Domain.Models.Entities;
+﻿using NotificationService.Domain.Models.Entities;
 using NotificationService.Domain.Models;
 using NotificationService.Domain.Interfaces.Providers;
 using NotificationService.Domain.Enums;
+using NotificationService.Infrastructure.Interfaces.Services;
 
 namespace NotificationService.Infrastructure.Providers.Notifications
 {

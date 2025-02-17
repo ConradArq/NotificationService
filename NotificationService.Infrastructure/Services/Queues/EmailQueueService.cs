@@ -1,14 +1,9 @@
 ﻿using NotificationService.Domain.Models.Entities;
+using NotificationService.Infrastructure.Interfaces.Services;
 using System.Collections.Concurrent;
 
 namespace NotificationService.Infrastructure.Services.Queues
 {
-    public interface IEmailQueueService
-    {
-        void EnqueueEmail(EmailNotification emailNotification);
-        bool TryDequeue(out EmailNotification emailNotification);
-    }
-
     public class EmailQueueService : IEmailQueueService
     {
         private readonly ConcurrentQueue<EmailNotification> _emailQueue = new ConcurrentQueue<EmailNotification>();

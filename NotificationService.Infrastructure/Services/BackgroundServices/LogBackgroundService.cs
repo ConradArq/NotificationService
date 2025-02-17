@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Hosting;
-using NotificationService.Infrastructure.Services.Queues;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Configuration;
 using NotificationService.Infrastructure.Logging.Models;

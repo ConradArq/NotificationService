@@ -12,7 +12,8 @@ namespace NotificationService.Application.Dtos.Notification.Email
 {
     public class ResponseEmailNotificationDto: ResponseNotificationDto
     {
-        public int? EmailTemplateId { get; set; }
+        public int? TemplateId { get; set; }
+        public object? TemplatePlaceholderMappings { get; set; }
         public string? Subject { get; set; }
         public string? Body { get; set; }
         public List<string>? To { get; set; }

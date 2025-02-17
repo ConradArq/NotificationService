@@ -61,7 +61,7 @@ namespace NotificationService.Shared.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to The entity is not in a valid state to be modified. Please check its status..
+        ///   Looks up a localized string similar to A conflict occurred while processing the request..
         /// </summary>
         public static string ConflictExceptionMessage {
             get {
@@ -106,6 +106,15 @@ namespace NotificationService.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to The entity is not in a valid state to be modified. Please check its status..
+        /// </summary>
+        public static string InvalidEntityStatusMessage {
+            get {
+                return ResourceManager.GetString("InvalidEntityStatusMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to None available..
         /// </summary>
         public static string NoneAvailableMessage {
@@ -120,6 +129,15 @@ namespace NotificationService.Shared.Resources {
         public static string NotFoundExceptionEntityMessage {
             get {
                 return ResourceManager.GetString("NotFoundExceptionEntityMessage", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The requested resource was not found..
+        /// </summary>
+        public static string NotFoundExceptionMessage {
+            get {
+                return ResourceManager.GetString("NotFoundExceptionMessage", resourceCulture);
             }
         }
         

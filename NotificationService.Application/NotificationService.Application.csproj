@@ -6,8 +6,9 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <!-- Remove files from the 'None' group so they can be explicitly included as 'Content' during the build -->
   <ItemGroup>
-    <None Remove="Templates\NotificationsReport.cshtml" />
+    <None Remove="Templates\Reports\Notifications\NotificationsReport.cshtml" />
   </ItemGroup>
 
   <!--Template's build action is set to Content. If template is not expected to change over time, it can be embedded into the assembly as a

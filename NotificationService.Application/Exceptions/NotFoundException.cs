@@ -9,9 +9,14 @@ namespace NotificationService.Application.Exceptions
     /// </summary>
     public class NotFoundException : ApplicationException
     {
+        public NotFoundException() : base(GeneralMessages.NotFoundExceptionMessage)
+        {
+        }
+
         public NotFoundException(object key) : base(string.Format(GeneralMessages.NotFoundExceptionEntityMessage, key))
         {
         }
+
         public NotFoundException(string msg) : base(msg)
         {
         }

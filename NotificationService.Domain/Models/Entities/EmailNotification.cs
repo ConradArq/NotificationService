@@ -10,7 +10,7 @@ namespace NotificationService.Domain.Models.Entities
         private List<string>? _cc;
         private List<string>? _bcc;
 
-        public int? EmailTemplateId { get; set; }
+        public int? TemplateId { get; set; }
         public string Subject { get; set; } = string.Empty;
         public string Body { get; set; } = string.Empty;
 

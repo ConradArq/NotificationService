@@ -13,7 +13,10 @@ using System.Globalization;
 using Microsoft.Extensions.Options;
 using NotificationService.Infrastructure.Interfaces.Providers;
 using NotificationService.Domain.Interfaces.Repositories;
-using System.Reflection;
+using NotificationService.Infrastructure.Interfaces.Services;
+using Microsoft.Data.SqlClient;
+using NotificationService.Domain.Models.Entities.External;
+using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -238,8 +241,24 @@ if (app.Environment.IsDevelopment())
         var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
         var jwtTokenProvider = app.Services.GetRequiredService<IJwtTokenProvider>();
 
-        var admins = await unitOfWork.ExternalRepository.GetAspNetUsersByAsync(roleName: "Admin");
-        var testAdmin = admins.FirstOrDefault();
+        AspNetUser? testAdmin = null;
+
+        try
+        {
+            var admins = await unitOfWork.ExternalRepository.GetAspNetUsersByAsync(roleName: "Admin");
+            testAdmin = admins.FirstOrDefault();
+        }
+        catch(SqlException ex)
+        {
+            if(ex.Message.Contains("Invalid object name"))
+            {
+                // Identity schema does not exist in DB
+            }
+            else
+            {
+                throw;
+            }
+        }
 
         var defaultUserName = "testAdmin";
         var defaultUserId = "1234567890";

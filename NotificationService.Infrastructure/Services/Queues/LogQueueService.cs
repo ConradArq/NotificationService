@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using NotificationService.Infrastructure.Interfaces.Services;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace NotificationService.Infrastructure.Services.Queues
 {
-    public interface ILogQueueService
-    {
-        void EnqueueLog(object logEntry);
-        Task<object?> DequeueLogAsync(CancellationToken cancellationToken);
-    }
-
     public class LogQueueService : ILogQueueService
     {
         private readonly Channel<object> _channel;

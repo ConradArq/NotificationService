@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using NotificationService.Infrastructure.Interfaces.Logging;
+using NotificationService.Infrastructure.Interfaces.Services;
 using NotificationService.Infrastructure.Logging.Models;
 using NotificationService.Infrastructure.Logging.Models.Enums;
-using NotificationService.Infrastructure.Services.Queues;
 using NotificationService.Shared.Extensions;
 using System.Security.Claims;
 
