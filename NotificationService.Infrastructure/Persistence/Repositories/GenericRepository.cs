@@ -16,8 +16,7 @@ namespace NotificationService.Infrastructure.Persistence.Repositories
 
         public virtual async Task<IReadOnlyList<T>> GetAsync(
             Expression<Func<T, bool>>? predicate = null, 
-            Dictionary<Expression<Func<T, object>>, 
-            List<Expression<Func<object, object>>>>? includesAndThenIncludes = null, 
+            Dictionary<Expression<Func<T, object>>, List<Expression<Func<object, object>>>?>? includesAndThenIncludes = null, 
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, bool disableTracking = true)
         {
             IQueryable<T> query = _context.Set<T>();
@@ -54,7 +53,7 @@ namespace NotificationService.Infrastructure.Persistence.Repositories
             int pageNumber,
             int pageSize,
             Expression<Func<T, bool>>? predicate = null,
-            Dictionary<Expression<Func<T, object>>, List<Expression<Func<object, object>>>>? includesAndThenIncludes = null,
+            Dictionary<Expression<Func<T, object>>, List<Expression<Func<object, object>>>?>? includesAndThenIncludes = null,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
             bool disableTracking = true)
         {
@@ -104,8 +103,7 @@ namespace NotificationService.Infrastructure.Persistence.Repositories
 
         public virtual async Task<T?> GetSingleAsync(
             int id, 
-            Dictionary<Expression<Func<T, object>>, 
-            List<Expression<Func<object, object>>>>? includesAndThenIncludes = null, 
+            Dictionary<Expression<Func<T, object>>, List<Expression<Func<object, object>>>?>? includesAndThenIncludes = null, 
             bool disableTracking = false)
         {
             IQueryable<T> query = _context.Set<T>();
