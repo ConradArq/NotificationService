@@ -8,12 +8,7 @@ using System.Threading.Tasks;
 namespace NotificationService.Domain.Interfaces.Repositories
 {
     public interface IGenericRepository<T> where T : class
-    {
-        T Create(T entity);
-        ICollection<T> CreateRange(ICollection<T> entities);
-        void Delete(T entity);
-        void DeleteRange(ICollection<T> entities);
-
+    {       
         /// <summary>
         /// Retrieves a list of entities from the database with optional filtering, ordering, and eager loading.
         /// </summary>
@@ -67,7 +62,45 @@ namespace NotificationService.Domain.Interfaces.Repositories
         /// <param name="id">The unique identifier of the entity.</param>
         /// <returns>The entity if found; otherwise, `null`.</returns>
         Task<T?> GetSingleAsync(int id, Dictionary<Expression<Func<T, object>>, List<Expression<Func<object, object>>>?>? includesAndThenIncludes = null, bool disableTracking = false);
+
+        /// <summary>
+        /// Creates a new entity in the database.
+        /// </summary>
+        /// <param name="entity">The entity to be created.</param>
+        /// <returns>The created entity.</returns>
+        T Create(T entity);
+
+        /// <summary>
+        /// Creates multiple entities in the database in a single transaction.
+        /// </summary>
+        /// <param name="entities">The collection of entities to create.</param>
+        /// <returns>The created entities.</returns>
+        ICollection<T> CreateRange(ICollection<T> entities);
+
+        /// <summary>
+        /// Deletes an entity from the database.
+        /// </summary>
+        /// <param name="entity">The entity to be deleted.</param>
+        void Delete(T entity);
+
+        /// <summary>
+        /// Deletes multiple entities from the database in a single transaction.
+        /// </summary>
+        /// <param name="entities">The collection of entities to delete.</param>
+        void DeleteRange(ICollection<T> entities);
+
+        /// <summary>
+        /// Updates an entity in the database.
+        /// </summary>
+        /// <param name="entity">The entity to update.</param>
+        /// <returns>The updated entity.</returns>
         T Update(T entity);
+
+        /// <summary>
+        /// Updates multiple entities in a single transaction.
+        /// </summary>
+        /// <param name="entities">The collection of entities to update.</param>
+        /// <returns>The updated entities.</returns>
         ICollection<T> UpdateRange(ICollection<T> entities);
     }
 }
