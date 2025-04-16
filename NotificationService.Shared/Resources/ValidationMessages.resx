@@ -183,4 +183,10 @@
   <data name="ModelBindingError" xml:space="preserve">
     <value>Unable to bind model for the given input.</value>
   </data>
+  <data name="InvalidOrderDirection" xml:space="preserve">
+    <value>Order direction must be 'asc' or 'desc'.</value>
+  </data>
+  <data name="OrderDirectionWithoutOrderByError" xml:space="preserve">
+    <value>Order direction cannot be set without OrderBy.</value>
+  </data>
 </root>

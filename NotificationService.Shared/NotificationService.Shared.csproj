@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Linq.Dynamic.Core" Version="1.6.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Compile Update="Resources\GeneralHttpStatusMessages.Designer.cs">
       <DependentUpon>GeneralHttpStatusMessages.resx</DependentUpon>
       <DesignTime>True</DesignTime>

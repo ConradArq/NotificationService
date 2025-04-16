@@ -1,6 +1,6 @@
 ﻿using NotificationService.Shared.Attributes;
 
-namespace NotificationService.Shared.Helpers
+namespace NotificationService.Application.Helpers
 {
     public static class TypeDiscoveryHelper
     {

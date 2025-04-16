@@ -20,13 +20,13 @@ namespace NotificationService.Application
             // Uncomment this line to enable localization using a folder other than the default "Resources" folder for .resx files.
             // This will configure the application to load localized strings from .resx files located in the specified folder (e.g., "FolderName").
             // Example: Place your resource files in "FolderName/ValidationMessages.en.resx" or "FolderName/ValidationMessages.es.resx".
-            //services.AddLocalization(options => options.ResourcesPath = "FolderName");
+            ////services.AddLocalization(options => options.ResourcesPath = "FolderName");
 
             // Uncomment these two lines to enable localization from the database.
             // This setup overrides the default behavior of using the "Resources" folder by replacing the default IStringLocalizerFactory.
             // All calls to IStringLocalizer or IStringLocalizer<T> will fetch strings from the database instead of .resx files.
-            //services.AddScoped<ILocalizationService, LocalizationService>();
-            //services.AddSingleton<IStringLocalizerFactory, DatabaseStringLocalizerFactory>();
+            ////services.AddScoped<ILocalizationService, LocalizationService>();
+            ////services.AddSingleton<IStringLocalizerFactory, DatabaseStringLocalizerFactory>();
 
             // To use both .resx files and database localization:
             // 1. Uncomment "services.AddLocalization" to enable .resx files.
@@ -83,7 +83,7 @@ namespace NotificationService.Application
                 // Uncomment to disable automatic 400 Bad Request responses for invalid models. If SuppressModelStateInvalidFilter is
                 // set to true, InvalidModelStateResponseFactory will not handle the response, so manual checking of ModelState.IsValid 
                 // would be required if no other validation mechanism is in place.
-                // options.SuppressModelStateInvalidFilter = true;
+                ////options.SuppressModelStateInvalidFilter = true;
 
                 options.InvalidModelStateResponseFactory = context =>
                 {
@@ -138,14 +138,14 @@ namespace NotificationService.Application
 
 
                     // Uncomment to allow tokens without an exp claim while validating those with exp claim (for testing purposes, not production)
-                    //LifetimeValidator = (notBefore, expires, token, parameters) =>
-                    //{
-                    //    if (!expires.HasValue)
-                    //    {
-                    //        return true;
-                    //    }
-                    //    return DateTime.UtcNow < expires.Value;
-                    //}
+                    ////LifetimeValidator = (notBefore, expires, token, parameters) =>
+                    ////{
+                    ////    if (!expires.HasValue)
+                    ////    {
+                    ////        return true;
+                    ////    }
+                    ////    return DateTime.UtcNow < expires.Value;
+                    ////}
                 };
             });
 
@@ -159,18 +159,18 @@ namespace NotificationService.Application
                           .RequireClaim("Permission", "CanGenerateReports")
                           .RequireClaim("Department", "IT"));
 
-                //options.AddPolicy("GenerateNotificationsReportPolicy", policy =>
-                //    policy.RequireAssertion(context =>
-                //        context.User.HasClaim(c => c.Type == "Role" && (c.Value == "Admin" || c.Value == "Manager")) &&
-                //        context.User.HasClaim(c => c.Type == "Permission" && c.Value == "CanGenerateReports") &&
-                //        context.User.HasClaim(c => c.Type == "Department" && c.Value == "IT")));
+                ////options.AddPolicy("GenerateNotificationsReportPolicy", policy =>
+                ////    policy.RequireAssertion(context =>
+                ////        context.User.HasClaim(c => c.Type == "Role" && (c.Value == "Admin" || c.Value == "Manager")) &&
+                ////        context.User.HasClaim(c => c.Type == "Permission" && c.Value == "CanGenerateReports") &&
+                ////        context.User.HasClaim(c => c.Type == "Department" && c.Value == "IT")));
 
                 options.AddPolicy("EntityOwnershipPolicy", policy =>
                 {
                     policy.Requirements.Add(new EntityOwnershipRequirement());
                     // Optionally add a specific entity type and ID parameter for customization.
                     // Use this if the entity name does not match the controller name or the ID parameter is not "id".
-                    //policy.Requirements.Add(new EntityOwnershipRequirement(entityType: typeof(SmtpConfig), idParameterName: "customId"));
+                    ////policy.Requirements.Add(new EntityOwnershipRequirement(entityType: typeof(SmtpConfig), idParameterName: "customId"));
                 });
             });
 

@@ -68,7 +68,7 @@ namespace NotificationService.Infrastructure
             {
                 options.UseSqlServer(configuration.GetConnectionString("ConnectionString"));
                 options.EnableSensitiveDataLogging();
-                //*,sqlServerOptions => sqlServerOptions.CommandTimeout(60)*/)
+                ////*,sqlServerOptions => sqlServerOptions.CommandTimeout(60)*/)
             });
 
             services.AddDbContext<ExternalDbContext>(options =>
@@ -77,16 +77,16 @@ namespace NotificationService.Infrastructure
                 options.EnableSensitiveDataLogging();
             });
 
-            //Uncomment to use in memory database
-            //services.AddDbContext<NotificationServiceDbContext>(options =>
-            //{
-            //    options.UseInMemoryDatabase("NotificationServiceDb");
-            //});
+            // Uncomment to use in memory database
+            ////services.AddDbContext<NotificationServiceDbContext>(options =>
+            ////{
+            ////    options.UseInMemoryDatabase("NotificationServiceDb");
+            ////});
 
-            //services.AddDbContext<ExternalDbContext>(options =>
-            //{
-            //    options.UseInMemoryDatabase("ExternalDb");
-            //});
+            ////services.AddDbContext<ExternalDbContext>(options =>
+            ////{
+            ////    options.UseInMemoryDatabase("ExternalDb");
+            ////});
 
             return services;
         }

@@ -1,11 +1,13 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using NotificationService.Application.Dtos;
+using NotificationService.Application.Dtos.EmailTemplate;
 using NotificationService.Application.Dtos.SmtpConfig;
 using NotificationService.Application.Exceptions;
+using NotificationService.Application.Helpers;
 using NotificationService.Application.Interfaces.Services;
 using NotificationService.Domain.Interfaces.Repositories;
 using NotificationService.Domain.Models.Entities;
-using NotificationService.Shared.Helpers;
 
 namespace NotificationService.Application.Services
 {
@@ -75,17 +77,24 @@ namespace NotificationService.Application.Services
             return response;
         }
 
-        public async Task<ResponseDto<IEnumerable<ResponseSmtpConfigDto>>> GetAllAsync()
+        public async Task<ResponseDto<IEnumerable<ResponseSmtpConfigDto>>> GetAllAsync(RequestDto? requestDto)
         {
-            var entities = await _unitOfWork.SmtpConfigRepository.GetAsync();
+            var selector = new Func<IQueryable<SmtpConfig>, IQueryable<ResponseSmtpConfigDto>>(query => query
+                 .ProjectTo<ResponseSmtpConfigDto>(_mapper.ConfigurationProvider)
+             );
 
-            var response = new ResponseDto<IEnumerable<ResponseSmtpConfigDto>>(_mapper.Map<IEnumerable<ResponseSmtpConfigDto>>(entities));
+            var responseDtos = await _unitOfWork.SmtpConfigRepository.GetAsync(
+                orderBy: QueryHelper.BuildOrderByFunction<SmtpConfig>(requestDto),
+                selector: selector
+            );
+
+            var response = new ResponseDto<IEnumerable<ResponseSmtpConfigDto>>(responseDtos);
             return response;
         }
 
         public async Task<PaginatedResponseDto<IEnumerable<ResponseSmtpConfigDto>>> GetAllPaginatedAsync(PaginationRequestDto requestDto)
         {
-            var entities = await _unitOfWork.SmtpConfigRepository.GetPaginatedAsync(requestDto.PageNumber, requestDto.PageSize);
+            var entities = await _unitOfWork.SmtpConfigRepository.GetPaginatedAsync(requestDto.PageNumber, requestDto.PageSize, orderBy: QueryHelper.BuildOrderByFunction<SmtpConfig>(requestDto));
 
             var response = new PaginatedResponseDto<IEnumerable<ResponseSmtpConfigDto>>(_mapper.Map<IEnumerable<ResponseSmtpConfigDto>>(entities.Data), requestDto.PageNumber, requestDto.PageSize, entities.TotalItems);
             return response;
@@ -94,7 +103,7 @@ namespace NotificationService.Application.Services
         public async Task<ResponseDto<IEnumerable<ResponseSmtpConfigDto>>> SearchAsync(SearchSmtpConfigDto requestDto)
         {
             var searchExpression = QueryHelper.BuildPredicate<SmtpConfig>(requestDto);
-            var entities = await _unitOfWork.SmtpConfigRepository.GetAsync(searchExpression);
+            var entities = await _unitOfWork.SmtpConfigRepository.GetAsync(searchExpression, orderBy: QueryHelper.BuildOrderByFunction<SmtpConfig>(requestDto));
 
             var response = new ResponseDto<IEnumerable<ResponseSmtpConfigDto>>(_mapper.Map<IEnumerable<ResponseSmtpConfigDto>>(entities));
             return response;
@@ -103,7 +112,7 @@ namespace NotificationService.Application.Services
         public async Task<PaginatedResponseDto<IEnumerable<ResponseSmtpConfigDto>>> SearchPaginatedAsync(SearchPaginatedSmtpConfigDto requestDto)
         {
             var searchExpression = QueryHelper.BuildPredicate<SmtpConfig>(requestDto);
-            var entities = await _unitOfWork.SmtpConfigRepository.GetPaginatedAsync(requestDto.PageNumber, requestDto.PageSize, searchExpression);
+            var entities = await _unitOfWork.SmtpConfigRepository.GetPaginatedAsync(requestDto.PageNumber, requestDto.PageSize, searchExpression, orderBy: QueryHelper.BuildOrderByFunction<SmtpConfig>(requestDto));
 
             var response = new PaginatedResponseDto<IEnumerable<ResponseSmtpConfigDto>>(_mapper.Map<IEnumerable<ResponseSmtpConfigDto>>(entities.Data), requestDto.PageNumber, requestDto.PageSize, entities.TotalItems);
             return response;

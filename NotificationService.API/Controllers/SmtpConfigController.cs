@@ -73,9 +73,9 @@ namespace NotificationService.API.Controllers
         [HttpGet]
         [Authorize(Roles = "Admin, Manager")]
         [ProducesResponseType(typeof(ApiResponseDto<IEnumerable<ResponseSmtpConfigDto>>), StatusCodes.Status200OK)]
-        public async Task<ActionResult> GetAll()
+        public async Task<ActionResult> GetAll([FromQuery] RequestDto? requestDto)
         {
-            var responseDto = await _smtpConfigService.GetAllAsync();
+            var responseDto = await _smtpConfigService.GetAllAsync(requestDto);
             var apiResponseDto = ApiResponseDto<IEnumerable<ResponseSmtpConfigDto>>.Ok(responseDto!);
             return Ok(apiResponseDto);
         }
@@ -83,10 +83,10 @@ namespace NotificationService.API.Controllers
         [HttpPost("paginated")]
         [Authorize(Roles = "Admin, Manager")]
         [ProducesResponseType(typeof(ApiPaginatedResponseDto<IEnumerable<ResponseSmtpConfigDto>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiPaginatedResponseDto<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiPaginatedResponseDto<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiPaginatedResponseDto<object>), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ApiPaginatedResponseDto<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponseDto<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseDto<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseDto<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponseDto<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> GetAllPaginated([FromBody] PaginationRequestDto requestDto)
         {
             var responseDto = await _smtpConfigService.GetAllPaginatedAsync(requestDto);
@@ -108,10 +108,10 @@ namespace NotificationService.API.Controllers
         [HttpPost("searchpaginated")]
         [Authorize(Roles = "Admin, Manager")]
         [ProducesResponseType(typeof(ApiPaginatedResponseDto<IEnumerable<ResponseSmtpConfigDto>>), StatusCodes.Status200OK)]
-        [ProducesResponseType(typeof(ApiPaginatedResponseDto<object>), StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(typeof(ApiPaginatedResponseDto<object>), StatusCodes.Status401Unauthorized)]
-        [ProducesResponseType(typeof(ApiPaginatedResponseDto<object>), StatusCodes.Status403Forbidden)]
-        [ProducesResponseType(typeof(ApiPaginatedResponseDto<object>), StatusCodes.Status500InternalServerError)]
+        [ProducesResponseType(typeof(ApiResponseDto<object>), StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(typeof(ApiResponseDto<object>), StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(typeof(ApiResponseDto<object>), StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(typeof(ApiResponseDto<object>), StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult> SearchPaginated([FromBody] SearchPaginatedSmtpConfigDto requestDto)
         {
             var responseDto = await _smtpConfigService.SearchPaginatedAsync(requestDto);

@@ -183,4 +183,10 @@
   <data name="ModelBindingError" xml:space="preserve">
     <value>No se pudo vincular el modelo con los datos proporcionados.</value>
   </data>
+  <data name="InvalidOrderDirection" xml:space="preserve">
+    <value>La dirección de orden debe ser 'asc' o 'desc'.</value>
+  </data>
+  <data name="OrderDirectionWithoutOrderByError" xml:space="preserve">
+    <value>No se puede establecer la dirección de orden sin OrderBy.</value>
+  </data>
 </root>

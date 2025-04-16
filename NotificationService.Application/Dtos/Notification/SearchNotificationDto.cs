@@ -9,14 +9,10 @@ using System.Threading.Tasks;
 
 namespace NotificationService.Application.Dtos.Notification
 {
-    public class SearchNotificationDto
+    public class SearchNotificationDto : RequestDto
     {
         public string? UserId { get; set; }
         public string? RoleId { get; set; }
-
-
-        [DefaultValue((int)Domain.Enums.Status.Active)]
-        public int? StatusId { get; set; }
 
         public DateTime? CreatedDate { get; set; }
         public string? CreatedBy { get; set; }

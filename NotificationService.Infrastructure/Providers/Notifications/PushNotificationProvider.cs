@@ -41,20 +41,20 @@ namespace NotificationService.Infrastructure.Providers.Notifications
 
             // Uncomment to send notification to a specific endpoint that handles notifications. As it stands now, notifications are sent to SignalR hub.
 
-            //var clientAppBaseUrl = _configuration["ExternalApis:ClientApp:BaseUrl"];
-            //var sendNotificationEndpoint = _configuration["ExternalApis:ClientApp:Endpoints:SendNotification"];
-            //var sendNotificationFullUrl = string.Concat(clientAppBaseUrl, sendNotificationEndpoint);
+            ////var clientAppBaseUrl = _configuration["ExternalApis:ClientApp:BaseUrl"];
+            ////var sendNotificationEndpoint = _configuration["ExternalApis:ClientApp:Endpoints:SendNotification"];
+            ////var sendNotificationFullUrl = string.Concat(clientAppBaseUrl, sendNotificationEndpoint);
 
-            //var headers = new Dictionary<string, string>();
+            ////var headers = new Dictionary<string, string>();
 
-            //var userAuthenticationToken = _jwtTokenProvider.GetUserAuthenticationToken();
+            ////var userAuthenticationToken = _jwtTokenProvider.GetUserAuthenticationToken();
 
-            //if (!string.IsNullOrEmpty(userAuthenticationToken))
-            //{
-            //    headers.Add("Authorization", string.Concat("Bearer ", _jwtTokenProvider.GetUserAuthenticationToken()));
-            //}
+            ////if (!string.IsNullOrEmpty(userAuthenticationToken))
+            ////{
+            ////    headers.Add("Authorization", string.Concat("Bearer ", _jwtTokenProvider.GetUserAuthenticationToken()));
+            ////}
 
-            //_ = await _httpService.SendAsync<string>(HttpMethod.Post, sendNotificationFullUrl, pushNotification, contentType: "application/json", headers);
+            ////_ = await _httpService.SendAsync<string>(HttpMethod.Post, sendNotificationFullUrl, pushNotification, contentType: "application/json", headers);
 
             SignalRNotificationResponseDto signalRNotificationResponseDto = new();
             signalRNotificationResponseDto.Data = pushNotification;

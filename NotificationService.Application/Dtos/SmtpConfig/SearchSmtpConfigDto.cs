@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace NotificationService.Application.Dtos.SmtpConfig
 {
-    public class SearchSmtpConfigDto 
+    public class SearchSmtpConfigDto : RequestDto
     {
         public string? Server { get; set; }
         [DefaultValue(587)]
@@ -19,8 +19,5 @@ namespace NotificationService.Application.Dtos.SmtpConfig
 
         [DefaultValue(true)]
         public bool? EnableSsl { get; set; }
-
-        [DefaultValue((int)Domain.Enums.Status.Active)]
-        public int? StatusId { get; set; }
     }
 }

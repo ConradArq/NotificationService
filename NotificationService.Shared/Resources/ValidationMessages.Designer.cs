@@ -205,6 +205,15 @@ namespace NotificationService.Shared.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Order direction must be &apos;asc&apos; or &apos;desc&apos;..
+        /// </summary>
+        public static string InvalidOrderDirection {
+            get {
+                return ResourceManager.GetString("InvalidOrderDirection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to The query parameter &apos;{0}&apos; is not a valid value for the type &apos;{1}&apos;..
         /// </summary>
         public static string InvalidQueryParameter {
@@ -228,6 +237,15 @@ namespace NotificationService.Shared.Resources {
         public static string ModelBindingError {
             get {
                 return ResourceManager.GetString("ModelBindingError", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Order direction cannot be set without OrderBy..
+        /// </summary>
+        public static string OrderDirectionWithoutOrderByError {
+            get {
+                return ResourceManager.GetString("OrderDirectionWithoutOrderByError", resourceCulture);
             }
         }
         

@@ -14,30 +14,49 @@ namespace NotificationService.Infrastructure.Persistence.Repositories
             _context = context;
         }
 
-        public virtual async Task<IReadOnlyList<T>> GetAsync(
-            Expression<Func<T, bool>>? predicate = null, 
-            Dictionary<Expression<Func<T, object>>, List<Expression<Func<object, object>>>?>? includesAndThenIncludes = null, 
-            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null, bool disableTracking = true)
+        public virtual async Task<IReadOnlyList<TResult>> GetAsync<TResult>(
+            Expression<Func<T, bool>>? predicate = null,
+            bool disableTracking = true,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            Func<IQueryable<T>, IQueryable<TResult>>? selector = null,
+            params Func<IQueryable<T>, IQueryable<T>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
-            if (disableTracking) query = query.AsNoTracking();
 
-            if (includesAndThenIncludes != null)
+            if (disableTracking)
+                query = query.AsNoTracking();
+
+            foreach (var include in includes)
             {
-                query = includesAndThenIncludes.Aggregate(query, (current, x) =>
-                {
-                    var queryWithInclude = current.Include(x.Key);
+                query = include(query);
+            }
 
-                    if (x.Value != null)
-                    {
-                        foreach (var thenInclude in x.Value)
-                        {
-                            if (thenInclude != null)
-                                queryWithInclude = queryWithInclude.ThenInclude(thenInclude);
-                        }
-                    }
-                    return queryWithInclude;
-                });
+            if (predicate != null)
+                query = query.Where(predicate);
+
+            if (orderBy != null)
+                query = orderBy(query);
+
+            if (selector != null)
+                return await selector(query).ToListAsync();
+
+            throw new InvalidOperationException("Selector must be provided when using projection.");
+        }
+
+        public virtual async Task<IReadOnlyList<T>> GetAsync(
+            Expression<Func<T, bool>>? predicate = null,
+            bool disableTracking = true,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            params Func<IQueryable<T>, IQueryable<T>>[] includes)
+        {
+            IQueryable<T> query = _context.Set<T>();
+
+            if (disableTracking)
+                query = query.AsNoTracking();
+
+            foreach (var include in includes)
+            {
+                query = include(query);
             }
 
             if (predicate != null)
@@ -49,40 +68,60 @@ namespace NotificationService.Infrastructure.Persistence.Repositories
             return await query.ToListAsync();
         }
 
-        public virtual async Task<(IReadOnlyList<T> Data, int TotalItems)> GetPaginatedAsync(
+        public virtual async Task<(IReadOnlyList<TResult> Data, int TotalItems)> GetPaginatedAsync<TResult>(
             int pageNumber,
             int pageSize,
             Expression<Func<T, bool>>? predicate = null,
-            Dictionary<Expression<Func<T, object>>, List<Expression<Func<object, object>>>?>? includesAndThenIncludes = null,
+            bool disableTracking = true,
             Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
-            bool disableTracking = true)
+            Func<IQueryable<T>, IQueryable<TResult>>? selector = null,
+            params Func<IQueryable<T>, IQueryable<T>>[] includes)
         {
             if (pageNumber <= 0) pageNumber = 1;
-            if (pageSize <= 0) throw new Exception("Page size must be greater than 0");
+            if (pageSize <= 0) throw new ArgumentException("Page size must be greater than 0", nameof(pageSize));
+            if (selector == null) throw new ArgumentNullException(nameof(selector), "Selector is required for projection.");
 
             IQueryable<T> query = _context.Set<T>();
 
             if (disableTracking)
                 query = query.AsNoTracking();
 
-            if (includesAndThenIncludes != null)
-            {
-                query = includesAndThenIncludes.Aggregate(query, (current, x) =>
-                {
-                    var queryWithInclude = current.Include(x.Key);
+            foreach (var include in includes)
+                query = include(query);
 
-                    if (x.Value != null)
-                    {
-                        foreach (var thenInclude in x.Value)
-                        {
-                            if (thenInclude != null)
-                                queryWithInclude = queryWithInclude.ThenInclude(thenInclude);
-                        }
-                    }
+            if (predicate != null)
+                query = query.Where(predicate);
 
-                    return queryWithInclude;
-                });
-            }
+            if (orderBy != null)
+                query = orderBy(query);
+
+            var totalItems = await query.CountAsync();
+            var pagedQuery = query.Skip((pageNumber - 1) * pageSize).Take(pageSize);
+
+            var projected = selector(pagedQuery);
+            var pagedResult = await projected.ToListAsync();
+
+            return (pagedResult, totalItems);
+        }
+
+        public virtual async Task<(IReadOnlyList<T> Data, int TotalItems)> GetPaginatedAsync(
+            int pageNumber,
+            int pageSize,
+            Expression<Func<T, bool>>? predicate = null,
+            bool disableTracking = true,
+            Func<IQueryable<T>, IOrderedQueryable<T>>? orderBy = null,
+            params Func<IQueryable<T>, IQueryable<T>>[] includes)
+        {
+            if (pageNumber <= 0) pageNumber = 1;
+            if (pageSize <= 0) throw new ArgumentException("Page size must be greater than 0", nameof(pageSize));
+
+            IQueryable<T> query = _context.Set<T>();
+
+            if (disableTracking)
+                query = query.AsNoTracking();
+
+            foreach (var include in includes)
+                query = include(query);
 
             if (predicate != null)
                 query = query.Where(predicate);
@@ -100,35 +139,42 @@ namespace NotificationService.Infrastructure.Persistence.Repositories
             return (paginatedItems, totalItems);
         }
 
+        public virtual async Task<TResult?> GetSingleAsync<TResult>(
+            object id,
+            Func<IQueryable<T>, IQueryable<TResult>> selector,
+            bool disableTracking = false,
+            params Func<IQueryable<T>, IQueryable<T>>[] includes)
+        {
+            if (selector == null)
+                throw new ArgumentNullException(nameof(selector));
+
+            IQueryable<T> query = _context.Set<T>();
+
+            if (disableTracking)
+                query = query.AsNoTracking();
+
+            foreach (var include in includes)
+                query = include(query);
+
+            var filtered = query.Where(e => EF.Property<object>(e, "Id")!.Equals(id));
+
+            return await selector(filtered).FirstOrDefaultAsync();
+        }
 
         public virtual async Task<T?> GetSingleAsync(
-            int id, 
-            Dictionary<Expression<Func<T, object>>, List<Expression<Func<object, object>>>?>? includesAndThenIncludes = null, 
-            bool disableTracking = false)
+            object id,
+            bool disableTracking = false,
+            params Func<IQueryable<T>, IQueryable<T>>[] includes)
         {
             IQueryable<T> query = _context.Set<T>();
-            if (disableTracking) query = query.AsNoTracking();
 
-            if (includesAndThenIncludes != null)
-            {
-                query = includesAndThenIncludes.Aggregate(query, (current, x) =>
-                {
-                    var queryWithInclude = current.Include(x.Key);
+            if (disableTracking)
+                query = query.AsNoTracking();
 
-                    if (x.Value != null)
-                    {
-                        foreach (var thenInclude in x.Value)
-                        {
-                            if (thenInclude != null)
-                                queryWithInclude = queryWithInclude.ThenInclude(thenInclude);
-                        }
-                    }
-                    return queryWithInclude;
-                });
-            }
+            foreach (var include in includes)
+                query = include(query);
 
-            T? result = await query.FirstOrDefaultAsync(cd => cd.Id == id);
-            return result;
+            return await query.FirstOrDefaultAsync(e => EF.Property<object>(e, "Id")!.Equals(id));
         }
 
         public virtual T Create(T entity)
@@ -156,8 +202,9 @@ namespace NotificationService.Infrastructure.Persistence.Repositories
         {
             foreach (var entity in entities)
             {
-                _context.Set<T>().Update(entity);
+                Update(entity);
             }
+
             return entities;
         }
 
@@ -170,7 +217,33 @@ namespace NotificationService.Infrastructure.Persistence.Repositories
         {
             foreach (var entity in entities)
             {
-                _context.Set<T>().Remove(entity);
+                Delete(entity);
+            }
+        }
+
+        public virtual void Reload<TProperty>(T entity, Expression<Func<T, TProperty?>>? property = null) where TProperty : class
+        {
+            var entry = _context.Entry(entity);
+
+            if (property == null)
+            {
+                // Reload the entire entity itself
+                entry.Reload();
+            }
+            else if (typeof(TProperty).IsGenericType && typeof(IEnumerable<>).IsAssignableFrom(typeof(TProperty).GetGenericTypeDefinition()))
+            {
+                // Reload a collection navigation property
+                var collectionProperty = property as Expression<Func<T, IEnumerable<TProperty>>>;
+
+                if (collectionProperty != null)
+                {
+                    entry.Collection(collectionProperty).Load();
+                }
+            }
+            else
+            {
+                // Reload a reference navigation property
+                entry.Reference(property).Load();
             }
         }
     }

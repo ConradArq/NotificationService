@@ -13,8 +13,5 @@ namespace NotificationService.Application.Dtos.EmailTemplate
         public string? Name { get; set; }
         public string? Subject { get; set; }
         public string? Body { get; set; }
-
-        [DefaultValue((int)Domain.Enums.Status.Active)]
-        public int? StatusId { get; set; }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Mvc.Controllers;
+using NotificationService.Application.Helpers;
 using NotificationService.Domain.Interfaces.Repositories;
 using NotificationService.Domain.Models;
-using NotificationService.Shared.Helpers;
 using System.Reflection;
 using System.Text.Json;
 
@@ -53,8 +53,9 @@ public static class FilterHelper
         // Alternative way to retrieve the repository dynamically
         //var repository = GetGenericRepository(unitOfWork, resolvedEntityType, null);
 
-        // Get GetSingleAsync method from the resolved repository for the resolved entity type
-        var getSingleAsyncMethod = repository.GetType().GetMethod("GetSingleAsync");
+        // Get non-generic GetSingleAsync method from the resolved repository for the resolved entity type
+        var getSingleAsyncMethod = repository.GetType().GetMethods()
+            .FirstOrDefault(m => m.Name == "GetSingleAsync" && !m.IsGenericMethodDefinition);
         if (getSingleAsyncMethod == null) throw new InvalidOperationException($"GetSingleAsync method not found in repository for type '{resolvedEntityType.Name}'.");
 
         // Get the ID property from the resolved entity type
@@ -76,8 +77,12 @@ public static class FilterHelper
             }
         }
 
+        Type queryableType = typeof(IQueryable<>).MakeGenericType(resolvedEntityType);
+        Type funcType = typeof(Func<,>).MakeGenericType(queryableType, queryableType);
+        Array includesArray = Array.CreateInstance(funcType, 0);
+
         // Invoke the GetSingleAsync method dynamically
-        var task = (Task?)getSingleAsyncMethod.Invoke(repository, new object?[] { searchEntityId, null, false });
+        var task = (Task?)getSingleAsyncMethod.Invoke(repository, new object?[] { searchEntityId, false, includesArray });
         var taskType = typeof(Task<>).MakeGenericType(resolvedEntityType);
 
         if (task == null || !taskType.IsInstanceOfType(task))

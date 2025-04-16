@@ -1,11 +1,12 @@
 ﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using NotificationService.Application.Dtos;
 using NotificationService.Application.Dtos.EmailTemplate;
 using NotificationService.Application.Exceptions;
+using NotificationService.Application.Helpers;
 using NotificationService.Application.Interfaces.Services;
 using NotificationService.Domain.Interfaces.Repositories;
 using NotificationService.Domain.Models.Entities;
-using NotificationService.Shared.Helpers;
 
 namespace NotificationService.Application.Services
 {
@@ -76,17 +77,24 @@ namespace NotificationService.Application.Services
             return response;
         }
 
-        public async Task<ResponseDto<IEnumerable<ResponseEmailTemplateDto>>> GetAllAsync()
+        public async Task<ResponseDto<IEnumerable<ResponseEmailTemplateDto>>> GetAllAsync(RequestDto? requestDto)
         {
-            var entities = await _unitOfWork.EmailTemplateRepository.GetAsync();
+            var selector = new Func<IQueryable<EmailTemplate>, IQueryable<ResponseEmailTemplateDto>>(query => query
+                 .ProjectTo<ResponseEmailTemplateDto>(_mapper.ConfigurationProvider)
+             );
 
-            var response = new ResponseDto<IEnumerable<ResponseEmailTemplateDto>>(_mapper.Map<IEnumerable<ResponseEmailTemplateDto>>(entities));
+            var responseDtos = await _unitOfWork.EmailTemplateRepository.GetAsync(
+                orderBy: QueryHelper.BuildOrderByFunction<EmailTemplate>(requestDto),
+                selector: selector
+            );
+
+            var response = new ResponseDto<IEnumerable<ResponseEmailTemplateDto>>(responseDtos);
             return response;
         }
 
         public async Task<PaginatedResponseDto<IEnumerable<ResponseEmailTemplateDto>>> GetAllPaginatedAsync(PaginationRequestDto requestDto)
         {
-            var entities = await _unitOfWork.EmailTemplateRepository.GetPaginatedAsync(requestDto.PageNumber, requestDto.PageSize);
+            var entities = await _unitOfWork.EmailTemplateRepository.GetPaginatedAsync(requestDto.PageNumber, requestDto.PageSize, orderBy: QueryHelper.BuildOrderByFunction<EmailTemplate>(requestDto));
 
             var response = new PaginatedResponseDto<IEnumerable<ResponseEmailTemplateDto>>(_mapper.Map<IEnumerable<ResponseEmailTemplateDto>>(entities.Data), requestDto.PageNumber, requestDto.PageSize, entities.TotalItems);
             return response;
@@ -95,7 +103,7 @@ namespace NotificationService.Application.Services
         public async Task<ResponseDto<IEnumerable<ResponseEmailTemplateDto>>> SearchAsync(SearchEmailTemplateDto requestDto)
         {
             var searchExpression = QueryHelper.BuildPredicate<EmailTemplate>(requestDto);
-            var entities = await _unitOfWork.EmailTemplateRepository.GetAsync(searchExpression);
+            var entities = await _unitOfWork.EmailTemplateRepository.GetAsync(searchExpression, orderBy: QueryHelper.BuildOrderByFunction<EmailTemplate>(requestDto));
 
             var response = new ResponseDto<IEnumerable<ResponseEmailTemplateDto>>(_mapper.Map<IEnumerable<ResponseEmailTemplateDto>>(entities));
             return response;
@@ -104,7 +112,7 @@ namespace NotificationService.Application.Services
         public async Task<PaginatedResponseDto<IEnumerable<ResponseEmailTemplateDto>>> SearchPaginatedAsync(SearchPaginatedEmailTemplateDto requestDto)
         {
             var searchExpression = QueryHelper.BuildPredicate<EmailTemplate>(requestDto);
-            var entities = await _unitOfWork.EmailTemplateRepository.GetPaginatedAsync(requestDto.PageNumber, requestDto.PageSize, searchExpression);
+            var entities = await _unitOfWork.EmailTemplateRepository.GetPaginatedAsync(requestDto.PageNumber, requestDto.PageSize, searchExpression, orderBy: QueryHelper.BuildOrderByFunction<EmailTemplate>(requestDto));
 
             var response = new PaginatedResponseDto<IEnumerable<ResponseEmailTemplateDto>>(_mapper.Map<IEnumerable<ResponseEmailTemplateDto>>(entities.Data), requestDto.PageNumber, requestDto.PageSize, entities.TotalItems);
             return response;

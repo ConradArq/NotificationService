@@ -9,13 +9,10 @@ using System.Threading.Tasks;
 
 namespace NotificationService.Application.Dtos.EmailTemplate
 {
-    public class SearchEmailTemplateDto 
+    public class SearchEmailTemplateDto : RequestDto
     {
         public string? Name { get; set; }
         public string? Subject { get; set; }
         public string? Body { get; set; }
-
-        [DefaultValue((int)Domain.Enums.Status.Active)]
-        public int? StatusId { get; set; }
     }
 }
