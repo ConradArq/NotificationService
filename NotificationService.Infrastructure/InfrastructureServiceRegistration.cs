@@ -44,7 +44,7 @@ namespace NotificationService.Infrastructure
             services.AddScoped<IExternalRepository, ExternalRepository>();
 
             services.AddSingleton<IEmailQueueService, EmailQueueService>();
-            services.AddTransient<IEmailService, EmailService>();
+            services.AddSingleton<IEmailService, EmailService>();
             services.AddSingleton<IHttpService, HttpService>();
 
             services.AddHostedService<EmailBackgroundService>();

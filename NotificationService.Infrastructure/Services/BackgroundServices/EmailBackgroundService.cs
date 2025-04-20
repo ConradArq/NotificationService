@@ -27,7 +27,7 @@ namespace NotificationService.Infrastructure.Services.BackgroundServices
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                using (var scope = _serviceScopeFactory.CreateScope())
+                await using (var scope = _serviceScopeFactory.CreateAsyncScope())
                 {
                     var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
                     var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();

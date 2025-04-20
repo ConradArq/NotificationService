@@ -20,7 +20,7 @@ namespace NotificationService.Infrastructure.Quartz.Jobs
 
         public async Task Execute(IJobExecutionContext context)
         {
-            using (var scope = _serviceScopeFactory.CreateScope())
+            await using(var scope = _serviceScopeFactory.CreateAsyncScope())
             {
                 var unitOfWork = scope.ServiceProvider.GetRequiredService<IUnitOfWork>();
                 var logger = scope.ServiceProvider.GetRequiredService<ILogger<NotificationCleanUpJob>>();
