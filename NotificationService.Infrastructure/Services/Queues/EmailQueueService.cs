@@ -1,21 +1,32 @@
 ﻿using NotificationService.Domain.Models.Entities;
 using NotificationService.Infrastructure.Interfaces.Services;
-using System.Collections.Concurrent;
+using System.Threading.Channels;
 
 namespace NotificationService.Infrastructure.Services.Queues
 {
     public class EmailQueueService : IEmailQueueService
     {
-        private readonly ConcurrentQueue<EmailNotification> _emailQueue = new ConcurrentQueue<EmailNotification>();
+        private readonly Channel<EmailNotification> _channel;
+
+        public EmailQueueService()
+        {
+            // Enable email throttling by limiting the channel to 100 queued (pending) items.
+            // Producers will wait if the buffer is full, preventing overload and enforcing backpressure.
+            var options = new BoundedChannelOptions(capacity: 100)
+            {
+                FullMode = BoundedChannelFullMode.Wait
+            };
+            _channel = Channel.CreateBounded<EmailNotification>(options);
+        }
 
         public void EnqueueEmail(EmailNotification emailNotification)
         {
-            _emailQueue.Enqueue(emailNotification);
+            _channel.Writer.TryWrite(emailNotification);
         }
 
-        public bool TryDequeue(out EmailNotification emailNotification)
+        public async Task<EmailNotification> DequeueEmailAsync(CancellationToken cancellationToken)
         {
-            return _emailQueue.TryDequeue(out emailNotification!);
+            return await _channel.Reader.ReadAsync(cancellationToken);
         }
     }
 }

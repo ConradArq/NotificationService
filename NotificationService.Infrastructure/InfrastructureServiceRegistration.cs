@@ -49,15 +49,39 @@ namespace NotificationService.Infrastructure
 
             services.AddHostedService<EmailBackgroundService>();
 
+            // Uncomment the following to use an in-memory store for Quartz (not recommended for production/distributed setups)
+            ////services.AddQuartz(q =>
+            ////{
+            ////    q.UseSimpleTypeLoader();
+            ////    q.UseInMemoryStore();
+            ////    q.UseDefaultThreadPool(tp =>
+            ////    {
+            ////        tp.MaxConcurrency = 10;
+            ////    });
+            ////});
+
+            // Configure Quartz to use a database for job persistence and distributed locking
             services.AddQuartz(q =>
             {
                 q.UseSimpleTypeLoader();
-                q.UseInMemoryStore();
+                q.UsePersistentStore(store =>
+                {
+                    store.UseProperties = true;
+                    store.UseSqlServer(sqlOptions =>
+                    {
+                        var connectionString = configuration.GetConnectionString("ConnectionString")
+                            ?? throw new InvalidOperationException("Missing connection string: 'ConnectionString' in configuration.");
+
+                        sqlOptions.ConnectionString = connectionString;
+                    });
+                    store.UseNewtonsoftJsonSerializer();
+                });
                 q.UseDefaultThreadPool(tp =>
                 {
                     tp.MaxConcurrency = 10;
                 });
             });
+
             services.AddQuartzHostedService(options => options.WaitForJobsToComplete = true);
             services.AddSingleton<ISchedulerFactory, StdSchedulerFactory>();
             services.AddSingleton<QuartzScheduler>();

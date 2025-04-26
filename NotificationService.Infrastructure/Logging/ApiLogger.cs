@@ -25,7 +25,6 @@ namespace NotificationService.Infrastructure.Logging
     /// Inject this interface if you require these custom methods.
     /// </summary>
 
-
     public class ApiLogger : ILogger, IApiLogger
     {
         private static readonly AsyncLocal<bool> _isLogging = new();

@@ -35,50 +35,48 @@ namespace NotificationService.Infrastructure.Services.BackgroundServices
                     var configuration = scope.ServiceProvider.GetRequiredService<IConfiguration>();
                     var hubContext = scope.ServiceProvider.GetRequiredService<IHubContext<NotificationHub>>();
 
-                    if (_emailQueueService.TryDequeue(out var emailNotification))
+                    var emailNotification = await _emailQueueService.DequeueEmailAsync(stoppingToken);
+
+                    SignalRNotificationResponseDto signalRNotificationResponseDto = new();
+                    signalRNotificationResponseDto.Errors = new();
+                    var signalRMethod = configuration["SignalR:Events:ReceiveNotification"] ?? "ReceiveNotification";
+
+                    try
                     {
-                        SignalRNotificationResponseDto signalRNotificationResponseDto = new();
-                        signalRNotificationResponseDto.Errors = new();
-                        var signalRMethod = configuration["SignalR:Events:ReceiveNotification"] ?? "ReceiveNotification";
+                        var smtpConfig = (await unitOfWork.SmtpConfigRepository.GetAsync(x => x.StatusId == (int)Status.Active)).FirstOrDefault();
 
-                        try
+                        if (smtpConfig != null)
                         {
-                            var smtpConfig = (await unitOfWork.SmtpConfigRepository.GetAsync(x => x.StatusId == (int)Status.Active)).FirstOrDefault();
+                            await emailService.SendEmailAsync(emailNotification, smtpConfig);
 
-                            if (smtpConfig != null)
-                            {
-                                await emailService.SendEmailAsync(emailNotification, smtpConfig);
+                            signalRNotificationResponseDto.Data = emailNotification;
+                            signalRNotificationResponseDto.Message = string.Format(GeneralMessages.EmailSentMessage, emailNotification.Subject, string.IsNullOrEmpty(emailNotification.ToRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.ToRecipients, string.IsNullOrEmpty(emailNotification.CcRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.CcRecipients, string.IsNullOrEmpty(emailNotification.BccRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.BccRecipients);
 
-                                signalRNotificationResponseDto.Data = emailNotification;
-                                signalRNotificationResponseDto.Message = string.Format(GeneralMessages.EmailSentMessage, emailNotification.Subject, string.IsNullOrEmpty(emailNotification.ToRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.ToRecipients, string.IsNullOrEmpty(emailNotification.CcRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.CcRecipients, string.IsNullOrEmpty(emailNotification.BccRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.BccRecipients);
+                            await hubContext.Clients.All.SendAsync(signalRMethod, emailNotification);
 
-                                await hubContext.Clients.All.SendAsync(signalRMethod, emailNotification);
-
-                                logger.LogInformation(signalRNotificationResponseDto.Message);
-                            }
-                            else
-                            {
-                                signalRNotificationResponseDto.Message = "Error while sending email";
-                                signalRNotificationResponseDto.Errors.Add(string.Format(GeneralMessages.ErrorWhileSendingEmailMessage, emailNotification.Subject, string.IsNullOrEmpty(emailNotification.ToRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.ToRecipients, string.IsNullOrEmpty(emailNotification.CcRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.CcRecipients, string.IsNullOrEmpty(emailNotification.BccRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.BccRecipients));
-
-                                await hubContext.Clients.All.SendAsync(signalRMethod, signalRNotificationResponseDto);
-
-                                logger.LogError($"Error in: {this.GetType().FullName}. There is no active SMTP configuration in the SmtpConfig table.");
-                            }
+                            logger.LogInformation(signalRNotificationResponseDto.Message);
                         }
-                        catch (Exception ex)
+                        else
                         {
                             signalRNotificationResponseDto.Message = "Error while sending email";
-                            signalRNotificationResponseDto.Errors.Add(string.Format(GeneralMessages.ErrorWhileSendingEmailMessage, emailNotification.Subject, string.IsNullOrEmpty(emailNotification.ToRecipients) ? "None" : emailNotification.ToRecipients, string.IsNullOrEmpty(emailNotification.CcRecipients) ? "None" : emailNotification.CcRecipients, string.IsNullOrEmpty(emailNotification.BccRecipients) ? "None" : emailNotification.BccRecipients));
-                            
+                            signalRNotificationResponseDto.Errors.Add(string.Format(GeneralMessages.ErrorWhileSendingEmailMessage, emailNotification.Subject, string.IsNullOrEmpty(emailNotification.ToRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.ToRecipients, string.IsNullOrEmpty(emailNotification.CcRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.CcRecipients, string.IsNullOrEmpty(emailNotification.BccRecipients) ? GeneralMessages.NoneAvailableMessage.TrimEnd('.') : emailNotification.BccRecipients));
+
                             await hubContext.Clients.All.SendAsync(signalRMethod, signalRNotificationResponseDto);
 
-                            logger.LogError(ex, "Error in email background service.");
+                            logger.LogError($"Error in: {this.GetType().FullName}. There is no active SMTP configuration in the SmtpConfig table.");
                         }
                     }
-                }
+                    catch (Exception ex)
+                    {
+                        signalRNotificationResponseDto.Message = "Error while sending email";
+                        signalRNotificationResponseDto.Errors.Add(string.Format(GeneralMessages.ErrorWhileSendingEmailMessage, emailNotification.Subject, string.IsNullOrEmpty(emailNotification.ToRecipients) ? "None" : emailNotification.ToRecipients, string.IsNullOrEmpty(emailNotification.CcRecipients) ? "None" : emailNotification.CcRecipients, string.IsNullOrEmpty(emailNotification.BccRecipients) ? "None" : emailNotification.BccRecipients));
 
-                await Task.Delay(1000, stoppingToken);
+                        await hubContext.Clients.All.SendAsync(signalRMethod, signalRNotificationResponseDto);
+
+                        logger.LogError(ex, "Error in email background service.");
+                    }
+
+                }
             }
         }
     }

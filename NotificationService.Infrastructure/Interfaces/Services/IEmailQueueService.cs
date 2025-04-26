@@ -10,6 +10,6 @@ namespace NotificationService.Infrastructure.Interfaces.Services
     public interface IEmailQueueService
     {
         void EnqueueEmail(EmailNotification emailNotification);
-        bool TryDequeue(out EmailNotification emailNotification);
+        Task<EmailNotification> DequeueEmailAsync(CancellationToken cancellationToken);
     }
 }
