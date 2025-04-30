@@ -6,7 +6,6 @@ using NotificationService.Infrastructure.Logging;
 using NotificationService.Infrastructure.Services.BackgroundServices;
 using NotificationService.Infrastructure.Interfaces.Logging;
 using NotificationService.Infrastructure.SignalR.Hubs;
-using Microsoft.OpenApi.Models;
 using NotificationService.Infrastructure.Quartz;
 using System.Security.Claims;
 using System.Globalization;
@@ -16,7 +15,6 @@ using NotificationService.Domain.Interfaces.Repositories;
 using NotificationService.Infrastructure.Interfaces.Services;
 using Microsoft.Data.SqlClient;
 using NotificationService.Domain.Models.Entities.External;
-using System.Collections.Generic;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,72 +23,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAPIServices(builder.Configuration);
 builder.Services.AddApplicationServices(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
-
-builder.Services.AddCors(options =>
-{
-    // Browsers block AllowAnyOrigin() when credentials like Authorization headers are sent, so origins in the CORS policy are used instead.
-    options.AddPolicy("ClientApp", builder =>
-    {
-
-#if DEBUG
-        builder.WithOrigins("http://localhost:5170")
-               .AllowCredentials()
-               .AllowAnyHeader()
-               .AllowAnyMethod();
-#else
-        builder.WithOrigins("https://client-app-url.com")
-               .AllowCredentials()
-               .AllowAnyHeader()
-               .AllowAnyMethod();
-#endif
-
-    });
-
-});
-
-builder.Services.AddSwaggerGen(c =>
-{
-    c.SwaggerDoc("v1", new OpenApiInfo
-    {
-
-        Title = "NotificationService",
-        Version = "v1",
-        Description = "Service for managing and sending push notifications to client devices and email notifications to designated email accounts.",
-        Contact = new OpenApiContact()
-        {
-            Name = "Development by: conra.arq@gmail.com"
-        }
-    });
-
-    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-    {
-        Name = "Authorization",
-        Type = SecuritySchemeType.ApiKey,
-        Scheme = "Bearer",
-        BearerFormat = "JWT",
-        In = ParameterLocation.Header,
-        Description = "Please insert the JWT token in this format: Bearer {your token here}"
-    });
-
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            new string[] {}
-        }
-    });
-
-    // Uncomment to include XML documentation comments from the project's generated .xml file in Swagger.
-    ////var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    ////c.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
-});
 
 // Configure HostOptions to handle unhandled exceptions in BackgroundService
 builder.Services.Configure<HostOptions>(options =>

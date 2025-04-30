@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using NotificationService.API.Filters;
 using NotificationService.API.ModelBinders.Providers;
 using NotificationService.Application.Exceptions;
@@ -102,7 +103,59 @@ namespace NotificationService.Application
 
             services.AddEndpointsApiExplorer();
 
-            services.AddSwaggerGen();
+            services.AddCors(options =>
+            {
+                // Browsers block AllowAnyOrigin() when credentials like Authorization headers are sent, so origins in the CORS policy are used instead.
+                var origins = configuration.GetSection("Cors:ClientAppOrigins").Get<string[]>()
+                    ?? throw new InvalidOperationException("CORS origin is not configured. Please set 'Cors:ClientAppOrigin' in configuration.");
+                options.AddPolicy("ClientApp", builder =>
+                {
+                    builder.WithOrigins(origins)
+                           .AllowCredentials()
+                           .AllowAnyHeader()
+                           .AllowAnyMethod();
+                });
+            });
+
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+
+                    Title = "ProjectBase",
+                    Version = "v1",
+                    Description = "A template project designed for efficiently and consistently building new applications using the controller-service design pattern.",
+                    Contact = new OpenApiContact()
+                    {
+                        Name = "Development by: conra.arq@gmail.com"
+                    }
+                });
+
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Name = "Authorization",
+                    Type = SecuritySchemeType.ApiKey,
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Description = "Please insert the JWT token in this format: Bearer {your token here}"
+                });
+
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement
+                {
+                    {
+                        new OpenApiSecurityScheme
+                        {
+                            Reference = new OpenApiReference
+                            {
+                                Type = ReferenceType.SecurityScheme,
+                                Id = "Bearer"
+                            }
+                        },
+                        new string[] {}
+                    }
+                });
+            });
 
             var jwtSettings = configuration.GetSection("JwtSettings").Get<JwtSettings>()
                    ?? throw new InvalidOperationException("JwtSettings section is missing from configuration.");
